@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 
 
-Route::prefix('/1006616206:AAH8kd8j8mZAyzT4zN4in39addGs3hM603E')->group(function (){
+Route::prefix('/1414994706:AAGgBtOQZURUL8-PUc3BvlepbVMl_CFhFHU')->group(function (){
     /* Route::get('/')*/
     Route::post('/', 'TelegramBotApi\IndexController@index');
 });

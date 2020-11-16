@@ -13,6 +13,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Objects\Message;
+use Andegna\DateTime;
+use Andegna\DateTimeFactory;
+use Andegna\Converter;
 
 /**
  * Class GeneralService
@@ -169,7 +172,7 @@ class GeneralService
        return ($difference+1)*ChannelRepository::maximumPostsOfOneDay();
    }
 
-    /**return page number from the coming call back query
+    /**return page number from the coming call back querys
      * @return int
      */
     public static function getPageNumberFromAdvertQuery():int
@@ -418,6 +421,18 @@ class GeneralService
     public static function makeInitialAndFinalDate($date)
    {
       return Carbon::create(Carbon::now()->year,self::findMonthFromComingDate($date),self::findDayFromComingDate($date));
+   }
+
+
+   public static function getEthiopianCurrentyear()
+   {
+       $ethiopian_date = new DateTime();
+       return  $ethiopian_date->getYear();
+   }
+
+   public static function getEthiopianCurrentHour()
+   {
+       return (new DateTime())->getHour();
    }
 
 

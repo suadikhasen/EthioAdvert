@@ -190,7 +190,7 @@ class Chat
             ]
         ];
 
-        $markup = self::$bot->replyKeyboardMarkup([
+        $markup = Keyboard::make([
             'keyboard' => $keyboard,
             'resize_keyboard' => true
         ]);

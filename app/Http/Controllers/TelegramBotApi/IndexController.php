@@ -67,8 +67,7 @@ class IndexController extends Controller
             StartCommand::class,
 //            SkipCommand::class,
         ]);
-
-
+        GeneralService::assignChatValues();
     }
 
 
@@ -79,15 +78,13 @@ class IndexController extends Controller
      */
     public function index(Command $command): void
     {
-       if (isset(Chat::$isCommand) ){
+       if (isset(Chat::$isCommand)){
            exit;
        }else{
-           GeneralService::assignChatValues();
            $this->processInput();
        }
 
     }
-
     /**
      *
      * @throws TelegramSDKException

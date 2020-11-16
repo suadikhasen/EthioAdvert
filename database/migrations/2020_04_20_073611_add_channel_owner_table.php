@@ -14,7 +14,7 @@ class AddChannelOwnerTable extends Migration
     public function up()
     {
         Schema::table('telegram_posts', function (Blueprint $table) {
-            $table->bigInteger('channel_owner_id');
+            // $table->bigInteger('channel_owner_id');
 
         });
     }

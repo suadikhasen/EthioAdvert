@@ -14,7 +14,7 @@ class ChangeIdToTransactionIdPaidsTable extends Migration
     public function up()
     {
         Schema::table('paids', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            // $table->bigIncrements('id');
         });
     }
 

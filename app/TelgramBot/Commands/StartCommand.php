@@ -19,7 +19,7 @@ class StartCommand extends Command
      */
     protected  $name = 'start';
 
-    protected  $chat_id;
+    // protected  $chat_id;
     /**
      * @var string
      */
@@ -34,7 +34,8 @@ class StartCommand extends Command
      * @throws TelegramSDKException
      */
     public function handle()
-    {
+    {   Chat::$update = $this->getUpdate();
+        Chat::$chat_id   = Chat::$update->getMessage()->getChat()->getId();
        if (isRegistered(Chat::$chat_id)){
           if (userType() === 'Advertiser'){
               Pages::advertiserPage();
