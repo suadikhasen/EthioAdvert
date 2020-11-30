@@ -36,6 +36,9 @@ class EditDate
    {
        $this->advert_id = $advert_id;
        $this->isCommand = $isCommand;
+       if(!EditAdvertService::validateForEditing($this->advert)){
+        exit;
+     }
    }
 
    public function handle()

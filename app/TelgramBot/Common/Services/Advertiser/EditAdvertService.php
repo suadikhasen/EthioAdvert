@@ -21,6 +21,18 @@ class EditAdvertService
       return false;
   }
 
+  public static function checkCallBackQueryIsEditPackage()
+  {
+
+    if (GeneralService::isQuery())
+      {
+         if (GeneralService::checkStartString(GeneralService::getCallBackQueryData(),'edit_package'))
+             return true;
+         return false;
+      }
+      return false;
+  }
+
   public static function checkCallBackQueryIsEditName()
   {
       if (GeneralService::isQuery())
@@ -101,6 +113,26 @@ class EditAdvertService
     public static function removeCacheEditAdvertId()
     {
         Cache::forget('edit_advert_id'.Chat::$chat_id);
+    }
+
+    public static function checkInlineKeyboard($type)
+    {
+        if (GeneralService::isQuery())
+        {
+            if (GeneralService::checkStartString(GeneralService::getCallBackQueryData(),$type))
+                return true;
+        }
+        return false;
+    }
+    
+    public static function validateForEditing($advert)
+    {
+        if($advert->approve_status || $advert->payment_status){
+            GeneralService::answerCallBackQuery('you can not edit this advert you can reorder if you want to advert this again');
+           return false;
+        }else{
+            return true;
+        }
     }
 
 

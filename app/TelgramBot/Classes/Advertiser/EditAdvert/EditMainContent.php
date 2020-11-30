@@ -20,6 +20,8 @@ class EditMainContent
      */
     protected $edited_main_content;
 
+    protected $advert;
+
     /**
      * EditName constructor.
      * @param $advert_id
@@ -27,8 +29,11 @@ class EditMainContent
     public function __construct($advert_id)
     {
         $this->advert_id = $advert_id;
-        $this->edited_main_content = AdvertsPostRepository::findAdvert($advert_id)->text_message;
-
+        $this->advert = AdvertsPostRepository::findAdvert($this->advert_id);
+        $this->edited_main_content = $this->advert->text_message;
+        if(!EditAdvertService::validateForEditing($this->advert)){
+            exit;
+         }
     }
 
     public function sendEditMainContentMessage()

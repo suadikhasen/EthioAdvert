@@ -15,11 +15,17 @@ use App\TelgramBot\Object\Chat;
 use App\Temporary;
 use Carbon\Carbon;
 use Andegna\DateTime;
+use App\Package;
+use App\TelgramBot\Classes\Advertiser\AddPromotionClass\LevelOfChannel;
+use App\TelgramBot\Classes\Advertiser\AddPromotionClass\NumberOfDays;
+use App\TelgramBot\Classes\Advertiser\AddPromotionClass\TimeOfTheAdvertPerDay;
+use App\TelgramBot\Common\Services\Advertiser\PromotionService;
+use App\TelgramBot\Common\Services\Advertiser\ViewAdvertService;
 use Illuminate\Support\Str;
-
 use Telegram\Bot\Exceptions\TelegramSDKException;
-
 use Telegram\Bot\Keyboard\Keyboard;
+use App\TelgramBot\Database\PackageRepositoryService;
+use Telgrambot\classes\Advertiser\AddPromotionClass\HowManyChannel;
 
 /**
  * Class AddPromotion
@@ -81,8 +87,9 @@ class AddPromotion
         if (AdvertsPostRepository::checkExistenceOfNonPaidPromotion(Chat::$chat_id))
             Chat::sendTextMessage('You Already Have Pending advert Please Pay The Pending Advert' . "\n" . ' You can edit or delete advert and  order another');
         else {
+            Chat::deleteTemporaryData();
             Chat::createQuestion('Add_Promotion', 'name_of_the_advert');
-            Chat::sendTextMessage('please send name of the promotion not greater than 20 characters (mostly organization name)s');
+            Chat::sendTextMessage('please send name of the promotion not greater than 20 characters (mostly organization name)');
         }
     }
 
@@ -119,8 +126,22 @@ class AddPromotion
                 case 'payment_code':
                     $this->acceptPaymentMethod();
                     break;
+                case 'how_many_days_is_live':
+                    (new NumberOfDays())->acceptNumberOfDay($this->response);
+                break;    
+
+                case 'time_duration_per_day':
+                    (new TimeOfTheAdvertPerDay())->acceptTimeOfTheAdvertPerDay($this->response);
+                break;
+                case 'level_of_channel':
+                    (new LevelOfChannel())->selectLevel($this->response);
+                break;
+                case 'how_many_channels':
+                    (new HowManyChannel())->acceptNumberOfChannel($this->response);
+                break;
             }
         } else {
+            
         }
     }
 
@@ -187,7 +208,7 @@ class AddPromotion
             if ($this->validateInitialDate()) {
                 Chat::$text_message = $initial_date;
                 Chat::createAnswer($this->response->id);
-                $this->sendFinalDateMessage();
+                (new NumberOfDays())->sendHowmanyDaysMessage();
             } else {
                 $this->sendDateError();
             }
@@ -550,4 +571,6 @@ class AddPromotion
             '<i>payment will be verified by entering ref number,hold your recipient after you make payment </i>' . "\n\n" .
             '<i> use My Promotions Button To See Advert Info and To Edit The Advert</i>';
     }
+
+    
 }

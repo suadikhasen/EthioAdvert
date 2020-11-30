@@ -27,6 +27,9 @@ class EditNumberOfView
     {
         $this->advert_id = $advert_id;
         $this->advert = AdvertsPostRepository::findAdvert($this->advert_id);
+        if (!EditAdvertService::validateForEditing($this->advert)) {
+            exit;
+        }
     }
 
     /**
@@ -46,7 +49,7 @@ class EditNumberOfView
      */
     private function processCommand()
     {
-        Chat::createQuestion('Edit_Number_Of_View','no_view');
+        Chat::createQuestion('Edit_Number_Of_View', 'no_view');
         $this->number_of_view = AdvertsPostRepository::findAdvert($this->advert_id)->no_view;
         EditAdvertService::putCacheForAdvertId($this->advert_id);
 
@@ -55,7 +58,8 @@ class EditNumberOfView
             GeneralService::checkTotalPriceOfAdvert($this->number_of_view),
             GeneralService::calculateMaximumView(),
             GeneralService::per_view_price,
-            false);
+            false
+        );
         GeneralService::answerCallBackQuery('editing number of view started');
     }
 
@@ -65,20 +69,20 @@ class EditNumberOfView
      */
     private function processQuestion($response)
     {
-       $no_view_keyboard = NumberOfViewService::getNumberOfViewFromInLineButtons(GeneralService::getCallBackQueryData());
-       if ($no_view_keyboard === 'Confirm'){
+        $no_view_keyboard = NumberOfViewService::getNumberOfViewFromInLineButtons(GeneralService::getCallBackQueryData());
+        if ($no_view_keyboard === 'Confirm') {
 
-           $this->setNumberOfView($response);
-           $this->update($this->advert_id);
-           Chat::deleteTemporaryData();
-           EditAdvertService::removeCacheAdvert($this->advert_id);
-           EditAdvertService::removeCacheEditAdvertId();
-           GeneralService::answerCallBackQuery('view updated successfully');
-//           Chat::sendTextMessage('view updated successfully');
-           Chat::sendEditTextMessage('view updated successfully',null,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
-       }else{
-           NumberOfViewService::sendEditedViewMessage($no_view_keyboard,$response,true);
-       }
+            $this->setNumberOfView($response);
+            $this->update($this->advert_id);
+            Chat::deleteTemporaryData();
+            EditAdvertService::removeCacheAdvert($this->advert_id);
+            EditAdvertService::removeCacheEditAdvertId();
+            GeneralService::answerCallBackQuery('view updated successfully');
+            //           Chat::sendTextMessage('view updated successfully');
+            Chat::sendEditTextMessage('view updated successfully', null, Chat::$chat_id, GeneralService::getMessageIDFromCallBack());
+        } else {
+            NumberOfViewService::sendEditedViewMessage($no_view_keyboard, $response, true);
+        }
     }
 
     /**update value of view of  the advert
@@ -86,7 +90,7 @@ class EditNumberOfView
      */
     public function update($advert_id)
     {
-        EthioAdvertPost::where('id',$advert_id)->update([
+        EthioAdvertPost::where('id', $advert_id)->update([
             'no_view'            => $this->number_of_view,
             'amount_of_payment'  => GeneralService::checkTotalPriceOfAdvert($this->number_of_view),
         ]);

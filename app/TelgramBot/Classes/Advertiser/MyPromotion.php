@@ -3,7 +3,7 @@
 
 namespace App\TelgramBot\Classes\Advertiser;
 
-
+use App\TelgramBot\Common\Classes\PaginationkeyBokard;
 use App\TelgramBot\Common\GeneralService;
 use App\TelgramBot\Database\AdvertsPostRepository;
 use App\TelgramBot\Object\Chat;
@@ -110,14 +110,12 @@ class MyPromotion
      */
     private function makeKeyBoardForListOfPromotions($list)
     {
-        if ($list->prev_page_url === null){
-            if ($list->next_page_url !== null)
-                $this->keyboard = $this->nextKeyBoard();
-        }elseif($list->next_page_url !== null)
-            $this->keyboard = $this->bothKeyboard();
-        else
-            $this->keyboard = $this->previousKeyboard();
-
+       $this->keyboard  =  (new PaginationkeyBokard(null,'Next',
+       'Previous',
+       'Page/'.($this->page_number+1),
+       'Page/'.($this->page_number-1),
+       $this->list->next_page_url,
+       $this->list->prev_page_url))->makeInlinekeyboard();
     }
 
     /**
@@ -126,43 +124,6 @@ class MyPromotion
     private function advertNumbers()
     {
         return (($this->page_number-1)*GeneralService::default_number_of_view_advert_page)+1;
-    }
-
-    /**
-     * @return Keyboard
-     */
-    private function nextKeyBoard()
-    {
-      return  Keyboard::make()->inline()->row(Keyboard::inlineButton([
-            'text'           =>     'Next',
-            'callback_data'  =>     'Page/'.($this->page_number+1)
-        ]));
-    }
-
-    /**
-     * @return Keyboard
-     */
-    private function previousKeyboard()
-    {
-       return Keyboard::make()->inline()->row(Keyboard::inlineButton([
-            'text'           =>     'Previous',
-            'callback_data'  =>     'Page/'.($this->page_number-1)
-        ]));
-    }
-
-    /**
-     * @return Keyboard
-     */
-    private function bothKeyboard()
-    {
-       return Keyboard::make()->inline()->row(
-           Keyboard::inlineButton([
-            'text'           =>     'Previous',
-            'callback_data'  =>     'Page/'.($this->page_number-1),
-        ]),Keyboard::inlineButton([
-            'text'           =>     'Next',
-            'callback_data'    =>     'Page/'.($this->page_number+1),
-        ]));
     }
 
 }

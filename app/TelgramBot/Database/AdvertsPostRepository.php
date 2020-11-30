@@ -51,7 +51,7 @@ class AdvertsPostRepository
 
    public static function pendingPromotion($advertiser_id)
    {
-       return EthioAdvertPost::where('advertiser_id',$advertiser_id)->where('payment_status',false)->first();
+       return EthioAdvertPost::where('advertiser_id',$advertiser_id)->where('payment_status',false)->where('approve_status',true)->first();
    }
 
    public static function checkExistenceOfNonPaidPromotion($advertiser_id)
@@ -62,7 +62,13 @@ class AdvertsPostRepository
    public static function findAdvert($advert_id)
    {
        return Cache::remember('advert'.$advert_id,now()->addDays(2),function () use ($advert_id) {
-           return EthioAdvertPost::findOrFail($advert_id);
+           return EthioAdvertPost::with('package.level')->findOrFail($advert_id);
        });
+   }
+
+   public static function havePendingInformation($advertiser_id)
+   {
+    return EthioAdvertPost::where('advertiser_id',$advertiser_id)->where('payment_status',false)->where('approve_status',true)->exists();
+     
    }
 }

@@ -21,6 +21,7 @@ class EditDescription
      * @var string
      */
     protected $edited_description;
+    protected $advert;
 
     /**
      * EditName constructor.
@@ -29,8 +30,11 @@ class EditDescription
     public function __construct($advert_id)
     {
         $this->advert_id = $advert_id;
-        $this->edited_description = AdvertsPostRepository::findAdvert($advert_id)->description_of_advert;
-
+        $this->advert = AdvertsPostRepository::findAdvert($this->advert_id);
+        $this->edited_description = $this->advert->description_of_advert;
+        if(!EditAdvertService::validateForEditing($this->advert)){
+            exit;
+         }
     }
 
     public function sendEditDescriptionMessage()

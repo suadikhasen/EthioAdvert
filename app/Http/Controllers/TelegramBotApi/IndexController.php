@@ -44,9 +44,17 @@ use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\Api;
 use App\Services\Command;
 use App\TelgramBot\Classes\Advertiser;
+use App\TelgramBot\Classes\Advertiser\AddPromotionClass\LevelOfChannel;
+use App\TelgramBot\Classes\Advertiser\AddPromotionClass\TimeOfTheAdvertPerDay;
+use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditNumberOfChannel;
+use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditPackage;
+use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditPostingTime;
 use App\TelgramBot\Object\Chat;
 use App\TelgramBot\Classes\Earnings\Earning;
 use App\TelgramBot\Classes\Earnings\TotalEarning;
+use App\TelgramBot\Common\Services\Advertiser\PromotionService;
+use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditLevelOfChannel;
+use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditNumberOfDays;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 
 /**
@@ -180,7 +188,11 @@ class IndexController extends Controller
       }elseif (EditAdvertService::checkCallBackQueryIsEditDate()){
            Chat::deleteTemporaryData();
           (new EditDate(ViewAdvertService::getIDFromViewKeyboard(),true))->handle();
-      }elseif (EditAdvertService::checkCallBackQueryIsEditPhoto()){
+      }elseif(EditAdvertService::checkCallBackQueryIsEditPackage()){
+        Chat::deleteTemporaryData();
+        (new EditPackage(ViewAdvertService::getIDFromViewKeyboard()))->sendEditOptions();
+      }
+      elseif (EditAdvertService::checkCallBackQueryIsEditPhoto()){
          Chat::deleteTemporaryData();
           (new EditPhoto(ViewAdvertService::getIDFromViewKeyboard()))->handle(true);
       }elseif (ChannelService::checkIfCallBackQueryIsPerDayPost()){
@@ -196,10 +208,35 @@ class IndexController extends Controller
           (new EditNumberOfView(ViewAdvertService::getIDFromViewKeyboard()))->handle(true);
       } elseif (Chat::$text_message === 'Verify Payment'){
           Chat::deleteTemporaryData();
-          (new VerifyPayment())->handle(true);
+          (new VerifyPayment())->sendPaymentMethod();
       } elseif (ReOrderAdvertService::checkCallBackQueryIsReOrdered()){
          Chat::deleteTemporaryData();
           (new ReOrderAdvert(ViewAdvertService::getIDFromViewKeyboard()))->handle(true);
+      } elseif(PromotionService::isLevelOfChannelKeyboard())
+      {
+         (new LevelOfChannel())->sendLevelofChannelMessage(ViewAdvertService::getIDFromViewKeyboard(),true);
+      }elseif(PromotionService::isTimePageKeyboard())
+      {
+          (new TimeOfTheAdvertPerDay())->sendTimeMessage(1,ViewAdvertService::getIDFromViewKeyboard(),true);
+      }elseif(EditAdvertService::checkInlineKeyboard('edit_level_Of_channel')){
+         Chat::deleteTemporaryData();
+         (new EditLevelOfChannel(ViewAdvertService::getIDFromViewKeyboard()))->sendMessage();
+      }elseif(EditAdvertService::checkInlineKeyboard('edit_number_of_days')){
+          Chat::deleteTemporaryData();
+          (new EditNumberOfDays(ViewAdvertService::getIDFromViewKeyboard()))->sendEditMessage();
+      }elseif(EditAdvertService::checkInlineKeyboard('edit_number_of_channel')){
+          Chat::deleteTemporaryData();
+          (new EditNumberOfChannel(ViewAdvertService::getIDFromViewKeyboard()))->sendEditMessage();
+      }elseif(EditAdvertService::checkInlineKeyboard('edit_posting_time')){
+          Chat::deleteTemporaryData();
+          (new EditPostingTime(ViewAdvertService::getIDFromViewKeyboard()))->sendEditMessage(1,1,PromotionService::getCacheNumberOfDays(),PromotionService::getCacheLevelId(),false);
+      }elseif(EditAdvertService::checkInlineKeyboard('level_keyboard_page')){
+          (new EditLevelOfChannel(Cache::get('edit_advert'.Chat::$chat_id)))->sendMessage(ViewAdvertService::getIDFromViewKeyboard(),true);
+      }elseif(EditAdvertService::checkInlineKeyboard('time_for_advert_page')){
+          (new EditPostingTime(Cache::get('edit_advert'.Chat::$chat_id)))->sendEditMessage(1,ViewAdvertService::getIDFromViewKeyboard(),PromotionService::getCacheNumberOfDays(),PromotionService::getCacheLevelId(),true);
+      }elseif(EditAdvertService::checkInlineKeyboard('select_advertiser_payment_method'))
+      {
+          (new VerifyPayment())->selectPaymentMethod();
       }
       else{
           $this->processWithTheirType(Chat::type());
@@ -263,7 +300,7 @@ class IndexController extends Controller
                (new EditPhoto(Cache::get('edit_advert_id'.Chat::$chat_id)))->handle(false);
                 break;
            case 'Verify_Payment':
-               (new VerifyPayment())->handle(true);
+               (new VerifyPayment())->acceptRefNumber();
                break;
            case 'Edit_Number_Of_View':
                (new EditNumberOfView(Cache::get('edit_advert_id'.Chat::$chat_id)))->handle(false);
@@ -271,6 +308,18 @@ class IndexController extends Controller
            case 'Change_Per_Day_Post':
                (new ChangePerDayPost(CacheService::getPerDayPostCache(Chat::$chat_id),Chat::$chat_id,false));
                break;
+           case 'Edit_Number_Of_Channel':
+               (new editNumberOfChannel(Cache::get('edit_advert_id'.Chat::$chat_id)))->editNumberOfChannel();
+              break;   
+           case 'Edit_Posting_Time':
+            (new EditPostingTime(Cache::get('edit_advert_id'.Chat::$chat_id)))->edit();
+              break;
+           case 'Edit_Level_Of_Channel':
+            (new EditLevelOfChannel(Cache::get('edit_advert_id'.Chat::$chat_id)))->editLevel();
+             break;
+           case 'Edit_Number_Of_Days':
+            (new EditNumberOfDays(Cache::get('edit_advert_id'.Chat::$chat_id)));
+              break;
        }
 
     }

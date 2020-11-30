@@ -3,8 +3,6 @@
 
 namespace App\TelgramBot\Classes\Advertiser;
 
-
-
 use App\TelgramBot\Common\GeneralService;
 use App\TelgramBot\Object\Chat;
 use Illuminate\Support\Facades\Cache;
@@ -59,11 +57,13 @@ class EditAdvert extends ViewAdverts
             'text'           => 'Edit Date',
             'callback_data'  => 'edit_advert_date/'.$this->advert->id
         ]))->row(Keyboard::inlineButton([
-            'text'           => 'Edit Number Of View',
-            'callback_data'  => 'edit_advert_view/'.$this->advert->id
+            'text'           => 'Edit Package',
+            'callback_data'  => 'edit_package/'.$this->advert->id
         ]))->row(Keyboard::inlineButton([
             'text'           => 'Back',
             'callback_data'  => 'back_to_view_advert/'.$this->advert->id
         ]));
     }
+
+    
 }

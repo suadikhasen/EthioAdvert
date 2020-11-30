@@ -26,5 +26,11 @@ class TemporaryRepository
      return Temporary::where('chat_id',Chat::$chat_id)->where('type','Edit Date')->orderBy('id','DESC')->first();
   }
 
+  public static function getSingleTemporaryData($chat_id,$type,$question)
+  {
+    return Temporary::where('chat_id',$chat_id)->where('type',$type)->where('question',$question)->first();
+
+  }
+
 
 }

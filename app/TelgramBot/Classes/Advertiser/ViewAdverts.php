@@ -46,8 +46,8 @@ class ViewAdverts
     {
        return  '<strong>'.' ----'.$this->advert->name_of_the_advert.' Advert Information</strong> ----'."\n".
         '<strong>price:</strong>'.$this->advert->amount_of_payment."\n".
-        '<strong>Initial Date:</strong>'.$this->advert->initial_date."\n".
-        '<strong>Final Date:</strong>'.$this->advert->final_date."\n";
+        '<strong>Initial Date:</strong>'.$this->advert->initial_date."\n";
+        
     }
 
     private function makeMainKeyboard()

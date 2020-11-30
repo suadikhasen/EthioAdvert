@@ -38,16 +38,7 @@ class GeneralService
     public const per_view_price = 0.1;
     const default_number_of_posts = 1;
 
-    /**
-     * check day availability of days
-     * @param $initial_date
-     * @param $final_date
-     * @return bool
-     */
-    public static function checkDayAvailabilityForAdvert($initial_date, $final_date): bool
-    {
-
-    }
+    
 
     public static function assignChatValues()
     {
@@ -135,12 +126,12 @@ class GeneralService
      * @param null $text_message
      * @throws TelegramSDKException
      */
-    public static function answerCallBackQuery($text_message=null)
+    public static function answerCallBackQuery($text_message=null,$alert=false)
     {
         Chat::$bot->answerCallbackQuery([
             'callback_query_id' => self::getCallBackQueyId(),
             'text'              => $text_message,
-            'show_alert'        => false
+            'show_alert'        => $alert
         ]);
     }
 
@@ -172,7 +163,7 @@ class GeneralService
        return ($difference+1)*ChannelRepository::maximumPostsOfOneDay();
    }
 
-    /**return page number from the coming call back querys
+    /**return page number from the coming call back querysss
      * @return int
      */
     public static function getPageNumberFromAdvertQuery():int

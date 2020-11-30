@@ -13,6 +13,8 @@ use App\TelgramBot\Common\Services\Advertiser\ViewAdvertService;
 use App\TelgramBot\Object\Chat;
 use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\Exceptions\TelegramSDKException;
+use App\TelgramBot\Database\AdvertsPostRepository;
+
 
 /**
  * Class EditPhoto
@@ -25,6 +27,7 @@ class EditPhoto
      * @var
      */
     private $advert_id;
+    protected $advert;
 
     /**
      * EditPhoto constructor.
@@ -33,6 +36,10 @@ class EditPhoto
     public function __construct($advert_id)
     {
         $this->advert_id = $advert_id;
+        $this->advert = AdvertsPostRepository::findAdvert($advert_id);
+        if(!EditAdvertService::validateForEditing($this->advert)){
+            exit;
+         }
     }
 
     /**

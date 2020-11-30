@@ -24,6 +24,8 @@ class EditName
     /**
      * @var
      */
+
+     protected $advert;
     protected $edited_name;
 
     /**
@@ -33,8 +35,11 @@ class EditName
     public function __construct($advert_id)
    {
        $this->advert_id = $advert_id;
-       $advert = AdvertsPostRepository::findAdvert($advert_id);
-       $this->edited_name = $advert->name_of_the_advert;
+       $this->advert = AdvertsPostRepository::findAdvert($advert_id);
+       $this->edited_name = $this->advert->name_of_the_advert;
+       if(!EditAdvertService::validateForEditing($this->advert)){
+        exit;
+     }
    }
 
    public function sendEditNameMessage()

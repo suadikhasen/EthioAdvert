@@ -13,5 +13,8 @@ class EthioAdvertPost extends Model
         'final_date'
     ];
 
-
+    public function  package()
+    {
+        return $this->hasOne(Package::class,'id','package_id');
+    }
 }
