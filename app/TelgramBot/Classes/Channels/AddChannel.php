@@ -21,7 +21,7 @@ class AddChannel
         {
             $question = Chat::createQuestion('Add Channel','username');
             if ($question){
-                Pages::textMessageWithMenuButton('please insert you channel username dont forget @ symbol');
+                Pages::textMessageWithMenuButton('please send your channel username dont forget @ symbol');
             }else{
                 Chat::sendTextMessage('something went wrong');
             }

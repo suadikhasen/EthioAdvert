@@ -11,4 +11,7 @@
 |
 */
 
-
+Route::group(['prefix' => 'admin','name'=>"admin."], function () {
+    Route::get('/','Admin\IndexController@index');
+    Route::get('/list_of_channels','Admin\ChannelsController@listOfChannels');
+});

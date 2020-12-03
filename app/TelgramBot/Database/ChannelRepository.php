@@ -93,6 +93,10 @@ class ChannelRepository
     {
         return Channels::where('channel_owner_id',$chat_id)->where('id',$channel_id)->exists();
     }
-
+    
+    public static function allChannel()
+    {
+       return Channels::simplePaginate(10);
+    }
 
 }

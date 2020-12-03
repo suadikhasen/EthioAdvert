@@ -10,6 +10,10 @@ class Channels extends Model
      protected $primaryKey = 'channel_id';
      public    $incrementing = false;
      protected $table = 'channels';
-
+    
+     public function level()
+     {
+          return $this->hasOne(LevelOfChaannel::class,'id','level_id');
+     }
 
 }

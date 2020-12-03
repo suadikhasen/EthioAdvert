@@ -24,3 +24,22 @@ if (!function_exists('is_user_have_Payment_method')){
     }
 }
 
+if (!function_exists('channel_approve_status')){
+    function channel_approve_status($status)
+    {
+      if($status){
+          return 'Approved';
+      }
+      return 'Not Approved';
+    }
+}
+
+if (!function_exists('channelLevel')){
+    function channelLevel($channel)
+    {
+      if($channel->level_id === null){
+          return '<b>not Assigned</b>';       
+      }
+     return $channel->level->level_name;
+    }
+}
