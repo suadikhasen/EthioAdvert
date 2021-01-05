@@ -22,4 +22,9 @@ class UserPaymentMethod extends Model
      * @var bool
      */
     public    $incrementing = false;
+
+    public function bank()
+    {
+        return $this->hasOne(BankAccount::class,'id','bank_code');
+    }
 }

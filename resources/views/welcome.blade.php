@@ -1,6 +1,6 @@
 @extends('admin.extensions.mainframe')
 @section('page_title')
-    <p>Home Page</p>
+    Home Page
 @endsection
 @section('main_content')
     welcome

@@ -260,7 +260,7 @@ return [
             'icon' => 'fas fa-fw fa-lock',
         ],
         [
-            'text'    => 'multilevel',
+            'text'    => 'Others',
             'icon'    => 'fas fa-fw fa-share',
             'submenu' => [
                 [
@@ -268,12 +268,12 @@ return [
                     'url'  => '#',
                 ],
                 [
-                    'text'    => 'level_one',
+                    'text'    => 'payments',
                     'url'     => '#',
                     'submenu' => [
                         [
-                            'text' => 'level_two',
-                            'url'  => '#',
+                            'text' => 'Pending Payments',
+                            'url'  => '/admin/channel_owners/pending_payments',
                         ],
                         [
                             'text'    => 'level_two',
@@ -304,14 +304,21 @@ return [
             'url'        => '/admin/list_of_channels',
         ],
         [
-            'text'       => 'warning',
+            'text'       => 'Adverts',
             'icon_color' => 'yellow',
-            'url'        => '#',
+            'url'        => '/admin/adverts/list_of_adverts',
         ],
+        
         [
-            'text'       => 'information',
+            'text'       => 'Advertiser',
             'icon_color' => 'cyan',
-            'url'        => '#',
+            'url'        => '/admin/advertiser/list_of_advertiser',
+        ],
+
+        [
+            'text'       => 'Channel Owner',
+            'icon_color' => 'cyan',
+            'url'        => '/admin/channel_owners',
         ],
     ],
 

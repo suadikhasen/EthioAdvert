@@ -81,7 +81,7 @@ class ChannelRepository
      */
     public static function getChannelById(int $id)
     {
-        return Channels::findOrFail($id);
+        return Channels::with(['user','level'])->findOrFail($id);
     }
 
     /**
@@ -97,6 +97,13 @@ class ChannelRepository
     public static function allChannel()
     {
        return Channels::simplePaginate(10);
+    }
+
+    public static function updateBlockStatus($id,$status)
+    {
+       Channels::find($id)->update([
+         'block_status' => $status,
+       ]);
     }
 
 }

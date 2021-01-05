@@ -24,8 +24,8 @@ if (!function_exists('is_user_have_Payment_method')){
     }
 }
 
-if (!function_exists('channel_approve_status')){
-    function channel_approve_status($status)
+if (!function_exists('approve_status')){
+    function approve_status($status)
     {
       if($status){
           return 'Approved';
@@ -33,6 +33,43 @@ if (!function_exists('channel_approve_status')){
       return 'Not Approved';
     }
 }
+
+if (!function_exists('payment_status')){
+    function payment_status($status)
+    {
+      if($status){
+          return 'Paid';
+      }
+      return 'Un Paid';
+    }
+}
+
+if (!function_exists('active_status')){
+    function active_status($status)
+    {
+      if($status === 1){
+          return 'Pending';
+      }elseif($status === 2){
+          return 'Active';
+      }elseif($status === 3){
+          return 'Finsh package ';
+      }elseif($status === 4){
+          return 'Expired';
+      }
+      
+    }
+}
+
+if (!function_exists('channel_removed_status')){
+    function channel_removed_status($status)
+    {
+      if($status){
+          return 'removed';
+      }
+      return 'Not removed';
+    }
+}
+
 
 if (!function_exists('channelLevel')){
     function channelLevel($channel)

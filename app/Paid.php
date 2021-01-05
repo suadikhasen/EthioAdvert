@@ -12,6 +12,7 @@ class Paid extends Model
     protected  $casts =[
         'created_at'  => 'date'
     ];
+    protected $guarded = [];
 //    protected $dateFormat = 'U';
     public function paymentMethod()
     {

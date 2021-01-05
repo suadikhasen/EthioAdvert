@@ -35,5 +35,10 @@ class User extends Authenticatable
     public     $incrementing = false;
     protected  $keyType = 'unsignedBigInteger';
 
+    public function payment_method()
+    {
+        return $this->hasOne(UserPaymentMethod::class,'chat_id','chat_id');
+    }
+
 
 }

@@ -20,9 +20,9 @@
                 <td>{{ $channel->name}}</td>
                 <td>{{ $channel->username}}</td>
                 <td>{{$channel->channel_id}}</td>
-                <td>{{channel_approve_status($channel->approve_status)}}</td>
+                <td>{{approve_status($channel->approve_status)}}</td>
                 <td>{{channelLevel($channel)}}</td>
-                <td><a href="#" class="btn btn-block"> View More</a></td>
+            <td><a href="{{ route('admin.detail_about_advert',['id' => $channel->channel_id])}}" class="btn btn-block"> View More</a></td>
             </tr>
         @endforeach
         {{ $channels->links()}}
