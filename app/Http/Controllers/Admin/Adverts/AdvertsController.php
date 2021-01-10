@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin\Adverts;
 
 use App\Http\Controllers\Controller;
+use App\TelegramPost;
 use App\TelgramBot\Database\Admin\AdvertRepository;
+use App\TelgramBot\Database\Admin\TelegramPostRepository;
 use Illuminate\Http\Request;
 
 class AdvertsController extends Controller
@@ -34,6 +36,13 @@ class AdvertsController extends Controller
         return view('admin.adverts.detail_about_adverts',[
              'advert'  => $advert,
              ]);
+    }
+
+    public function viewPostHistory($advert_id)
+    {
+         $telegram_posts_of_the_advert = TelegramPostRepository::listOfPostsOfAdvert($advert_id);
+         $advert = AdvertRepository::findAdvert($advert_id);
+         return view('admin.adverts.post_history',compact(['telegram_posts_of_the_advert','advert']));
     }
 
 

@@ -12,6 +12,7 @@
 */
 
 Route::name('admin.')->prefix('admin')->group( function () {
+
     Route::get('/','Admin\IndexController@index');
     Route::get('/list_of_channels','Admin\ChannelsController@listOfChannels');
     Route::get('/detail_about_advert/{id}','Admin\ChannelsController@viewMore')->name('detail_about_advert');
@@ -30,6 +31,8 @@ Route::name('admin.')->prefix('admin')->group( function () {
         Route::get('/list_of_adverts','Admin\Adverts\AdvertsController@listOfAdverts')->name('list_of_adverts');
         Route::get('/detail_about_advert/{advert_id}','Admin\Adverts\AdvertsController@detailAboutAdverts')->name('detail_about_advrt');
         Route::get('/search_adverts','Admin\Adverts\SearchController@search')->name('search_adverts');
+        Route::get('/post_advert/{advert_id}','Admin\Adverts\AdvertPostingController@post')->name('post_the_advert');
+        Route::get('/view_post_history/{advert_id}','Admin\Adverts\AdvertsController@viewPostHistory')->name('view_post_history');
     });
 
 
@@ -47,6 +50,25 @@ Route::name('admin.')->prefix('admin')->group( function () {
         Route::get('/channel_owners_payment_history/{id}','Admin\ChannelOwners\ChannelOwnersController@listOfPayment')->name('channel_owners_payment_history');
         Route::get('/pending_payments','Admin\PaymentController@pendingPayments')->name('pending_payments');
         Route::get('/payment_page/{user_id}/{pending_amount}','Admin\PaymentController@goToPayPage')->name('go_to_payment_page');
-        Route::get('/pay_to_channel_owners/{user_id}/{pending_amount}','Admin\PaymentController@pay')->name('pay_to_channel_owners');    
+        Route::get('/pay_to_channel_owners/{user_id}/{pending_amount}','Admin\PaymentController@pay')->name('pay_to_channel_owners'); 
+    });
+
+    Route::prefix('levels')->name('levels.')->group(function(){
+       
+        Route::get('/','Admin\Levels\LevelController@allLevel')->name('list_of_levels');
+        Route::get('/add_new_level','Admin\Levels\LevelController@addNewLevel')->name('add_new_level');
+        Route::post('/save_level',  'Admin\Levels\LevelController@saveLevel')->name('save_level');
+        Route::get('/list_of_channels_by_level/{level_id}','Admin\Levels\LevelController@seeLevelChannels')->name('list_of_channels_by_level');
+       
+        
+    });
+
+
+    Route::prefix('packages')->name('packages.')->group(function(){
+
+        Route::get('/all_packages','Admin\Packages\PackagesController@all')->name('all_packages');
+        Route::get('/add_new_package','Admin\Packages\PackagesController@addNew')->name('add_new_package');
+        Route::post('/save_package' , 'Admin\Packages\PackagesController@save')->name('save_package');
+
     });
 });

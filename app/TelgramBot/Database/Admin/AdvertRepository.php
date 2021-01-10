@@ -67,5 +67,12 @@ class AdvertRepository
 
     }
 
+    public static function updateStatus($advert_id,$active_status)
+    {
+       return EthioAdvertPost::where('id',$advert_id)->update([
+         'active_status'  => $active_status
+       ]);
+    }
+
     
 }

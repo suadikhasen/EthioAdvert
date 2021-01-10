@@ -14,7 +14,9 @@ class ChannelsController extends Controller
     public function listOfChannels()
     {
        $channels = ChannelRepository::allChannel();
-       return view('admin.channels.list_of_channels',['channels' => $channels]);
+       $tittle   = 'list of channels';
+       $table_header = 'list of channels';
+       return view('admin.channels.list_of_channels',compact('channels','tittle','table_header'));
     }
 
     public function viewMore($id)

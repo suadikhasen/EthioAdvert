@@ -1,11 +1,11 @@
 @extends('admin.extensions.mainframe')
 @section('page_title')
-    list of channels
+    {{ $tittle }}
 @endsection
 @section('main_content')
-    <table class="table table-bordered">
+    <table class="table table-bordered table-dark">
         <thead>
-            <b>List Of Channels</b> <br>
+            <b>{{ $table_header }}</b> <br>
         </thead>
         <tr>
           <th>Name</th>
@@ -19,12 +19,13 @@
             <tr>
                 <td>{{ $channel->name}}</td>
                 <td>{{ $channel->username}}</td>
-                <td>{{$channel->channel_id}}</td>
+                <td>{{ $channel->channel_id}}</td>
                 <td>{{approve_status($channel->approve_status)}}</td>
                 <td>{{channelLevel($channel)}}</td>
-            <td><a href="{{ route('admin.detail_about_advert',['id' => $channel->channel_id])}}" class="btn btn-block"> View More</a></td>
+            <td><a href="{{ route('admin.detail_about_advert',['id' => $channel->channel_id])}}" class="btn btn-sm btn-success"> View More</a></td>
             </tr>
         @endforeach
-        {{ $channels->links()}}
+        
     </table>
+    {{ $channels->links()}}
 @endsection

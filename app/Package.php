@@ -8,8 +8,12 @@ class Package extends Model
 {
     //
 
+    protected $table = 'packges';
+
     public function level()
     {
         return $this->hasOne(LevelOfChaannel::class,'id','channel_level_id');
     }
+
+    
 }

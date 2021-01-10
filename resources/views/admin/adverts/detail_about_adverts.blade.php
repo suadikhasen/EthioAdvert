@@ -6,13 +6,14 @@
     <div class="row">
         <div class="mb-4 col-md-10 bg-dark align-content-center">
             <a href="#" class="btn btn-primary mr-2 mt-2 mb-2"> Approve Advert</a>
-            <a href="#" class="btn btn-success mr-2 mt-2 mb-2"> Post Advert</a>
+            <a href="{{ route('admin.adverts.post_the_advert',$advert->id)}}" class="btn btn-success mr-2 mt-2 mb-2"> Post Advert</a>
+            <a href="{{ route('admin.adverts.view_post_history',$advert->id)}}" class="btn btn-info mr-2 mt-2 mb-2">  View Post History</a>
 
         </div>
         <div class="col-md-10">
             <div class="card card-success">
                 <div class="card-title>
-                    <b class="bg-primary">  {{ $advert->name_of_the_advert }} information </b>
+                    <b class="bg-primary" >  {{ $advert->name_of_the_advert }} information </b>
                 </div>
 
                 <div class="card-body">

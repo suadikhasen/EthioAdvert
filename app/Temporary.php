@@ -8,4 +8,4 @@ class Temporary extends Model
 {
     protected $guarded = [];
     
-}
+};  
