@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\PackageDuplicate;
+use App\Rules\PackagePostingTime;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PackageRequest extends FormRequest
@@ -22,14 +25,16 @@ class PackageRequest extends FormRequest
      * @return array
      */
     public function rules()
-    {
+    {   
+        
         return [
-            'package_name' => ['required','string','unique:packges,package_name'],
-            'package_price' => ['required','integer','gt:0'],
-            'package_number_of_days' => ['required','integer','gt:0'],
-            'package_initial_posting_time' => ['required'],
-            'package_final_posting_time'   => ['required'],
-            'package_level'                => ['required','string','exists:packges,package_name']
+            'package_name'                 => ['required','string','unique:packges,package_name','bail'],
+            'package_price'                => ['required','integer','gt:0','bail'],
+            'package_number_of_days'       => ['required','integer','gt:0','bail'],
+            'package_initial_posting_time' => ['bail','date_format:H:i','required',],
+            'package_final_posting_time'   => ['bail','date_format:H:i','required','after:package_initial_posting_time'],
+            'package_level'                => ['required','string','exists:chanel_level,level_name','bail']
+
         ];
     }
 }

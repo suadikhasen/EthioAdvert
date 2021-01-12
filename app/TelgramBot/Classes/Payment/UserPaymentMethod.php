@@ -88,8 +88,6 @@ class UserPaymentMethod
             }else{
                 $array[(string)$single->question] = $single->answer;
             }
-
-
         }
         PaymentMethod::create([
           'chat_id'    => Chat::$chat_id,

@@ -90,7 +90,6 @@ class VerifyPayment
             }else{
                 Chat::sendTextMessage('Your Amount Is Less than The Amount Of The Advert');
             }
-
         }
 
     }

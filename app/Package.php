@@ -9,6 +9,7 @@ class Package extends Model
     //
 
     protected $table = 'packges';
+    protected $guarded =[];
 
     public function level()
     {

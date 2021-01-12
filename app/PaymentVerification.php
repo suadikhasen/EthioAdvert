@@ -15,7 +15,7 @@ class PaymentVerification extends Model
 
     public function paymentMethod()
     {
-        return $this->hasOne(listOfPaymentMethod::class,'id','payment_method_code');
+     return $this->hasOne(listOfPaymentMethod::class,'id','payment_method_code');
     }
 
     public function user()

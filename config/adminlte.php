@@ -275,6 +275,12 @@ return [
                             'text' => 'Pending Payments',
                             'url'  => '/admin/channel_owners/pending_payments',
                         ],
+
+                        [
+                            'text' => 'Payment Methods',
+                            'url'  => '/admin/payments/list_of_payment_methods',
+                        ],
+
                         [
                             'text'    => 'level_two',
                             'url'     => '#',
