@@ -2,24 +2,25 @@
 
 namespace App\TelgramBot\Classes\Advertiser\EditAdvert\Packages;
 
-use Telgrambot\classes\Advertiser\AddPromotionClass\HowManyChannel;
 use App\TelgramBot\Database\AdvertsPostRepository;
 use App\TelgramBot\Common\Services\Advertiser\EditAdvertService;
 use App\TelgramBot\Object\Chat;
 use App\EthioAdvertPost;
 use App\TelgramBot\Classes\Advertiser\Common\HowManyChannels;
-
+use Illuminate\Support\Carbon;
 class EditNumberOfChannel extends HowManyChannels
 {
     private $number_of_channel;
     private $advert_id;
     private $advert;
+    
 
     public function __construct($advert_id)
     {
         $this->advert_id = $advert_id;
         $this->advert = AdvertsPostRepository::findAdvert($advert_id);
         $this->number_of_channel = $this->advert->number_of_channel;
+        
         if(!EditAdvertService::validateForEditing($this->advert)){
             exit;
          }

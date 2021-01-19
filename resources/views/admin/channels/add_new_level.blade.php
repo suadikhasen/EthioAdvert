@@ -7,7 +7,7 @@
         <div class="col-md-5 mt-5">
             @if (Session::has('success_notification'))
              @include('admin.Includes.success_notification',['notification' => Session::get('success_notification', 'error occured')])     
-           @endif
+            @endif
             <p >Last Added Level:{{ $last_level }}</p><br>
            <form method="POST" action="{{route('admin.levels.save_level')}}">
                <div class="form-group">

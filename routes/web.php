@@ -59,8 +59,13 @@ Route::name('admin.')->prefix('admin')->group( function () {
         Route::get('/add_new_level','Admin\Levels\LevelController@addNewLevel')->name('add_new_level');
         Route::post('/save_level',  'Admin\Levels\LevelController@saveLevel')->name('save_level');
         Route::get('/list_of_channels_by_level/{level_id}','Admin\Levels\LevelController@seeLevelChannels')->name('list_of_channels_by_level');
-       
-        
+        Route::get('/list_of_level_attributes' , 'Admin\Levels\LevelAttributeController@allAttributes')->name('list_of_level_attributes');
+        Route::get('/edit_level_of_attributes/{id}','Admin\Levels\LevelAttributeController@editAttributePage')->name('edit_level_of_attributes'); 
+        Route::get('/delete_level_of_attributes/{id}','Admin\Levels\LevelAttributeController@deleteAttribute')->name('delete_level_of_attributes'); 
+        Route::get('/add_new_level_attribute','Admin\Levels\LevelAttributeController@addNewAttributePage')->name('add_new_level_attribute');
+        Route::post('/save_new_level_attribute' ,'Admin\Levels\LevelAttributeController@saveNewAttribute')->name('save_new_level_attribute');
+        Route::post('/save_edit_level_attribute/{id}' ,'Admin\Levels\LevelAttributeController@editAttribute')->name('save_edit_level_attribute');
+
     });
 
 
@@ -71,4 +76,21 @@ Route::name('admin.')->prefix('admin')->group( function () {
         Route::post('/save_package' , 'Admin\Packages\PackagesController@save')->name('save_package');
 
     });
+   Route::prefix('payments')->name('payments.')->group(function(){
+        
+     Route::get('/payment_methods_for_channel_owners','Admin\Payments\PaymentMethodController@forChannelOwner')->name('list_of_payment_methods_for_channel_owners');
+     Route::get('/add_new_payment_method_for_channel_owners','Admin\Payments\PaymentMethodController@addNewPaymentMethodForChannelOwnersPage')->name('add_new_payment_method_for_channel_owners');
+     Route::post('/save_new_payment_method_for_channel_owners','Admin\Payments\PaymentMethodController@addNewPaymentMethodsForChannelOwners')->name('save_new_payment_method_for_channel_owners');
+     Route::get('/payment_methods_for_advertiser','Admin\Payments\PaymentMethodController@forAdvertiser')->name('list_of_payment_methods_for_advertiser');
+     Route::get('/add_new_payment_method_for_advertiser','Admin\Payments\PaymentMethodController@addNewPaymentMethodForAdvertiserspage')->name('add_new_payment_method_for_advertiser');
+     Route::post('/save_new_payment_method_for_channel_owners','Admin\Payments\PaymentMethodController@saveNewPaymentMethodsForAdvertiser')->name('save_new_payment_method_for_advertiser');
+     
+
+     
+   }); 
+
+   Route::prefix('transaction_numbers')->name('transaction_numbers.')->group(function () {
+
+       Route::get('/list_of_transactions','Admin\TransactionNumber\TransactionNumberController@listOfTransactionNumbers')->name('list_of_transactions');
+   });
 });

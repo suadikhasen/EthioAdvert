@@ -12,6 +12,36 @@ class LevelRepository
        return ChannelLevel::simplePaginate(10);
     }
 
+    public static function assignChannelLevelForSatisiserChannels($channel_id,$total_percent_of_channel)
+    { 
+        $levels = ChannelLevel::where('minimum_percentage_value','<=',$total_percent_of_channel)
+        ->where('maximum_percentage_value','>=',$total_percent_of_channel)
+        ->first();
+        Channels::find($channel_id)->update([
+            'level_id' => $levels->id,
+          ]);
+          return $levels->level_name;
+    }
+
+    public static function assignLevelForSuperChannels($channel_id,$total_percent_of_channel)
+    {
+        $levels = ChannelLevel::orderBy('maximum_percentage_value','dsc')->first();
+        channels::find($channel_id)->update([
+            'level_id' => $levels->id,
+          ]);
+          return $levels->level_name;
+    }
+
+    public static function checkPecentageUboveness($total_percent_of_channel)
+    {
+        return ChannelLevel::where('maximum_percentage_value','<=',$total_percent_of_channel)->exists();
+    }
+
+    public static function checkPercentageExistence($total_percentage)
+    {
+       return ChannelLevel::where('minimum_percentage_value','<=',$total_percentage)->where('maximum_percentage_value','>=',$total_percentage)->exists();
+    }
+
     public static function countLevels()
     {
         return ChannelLevel::count();

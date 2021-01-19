@@ -263,22 +263,49 @@ return [
             'text'    => 'Others',
             'icon'    => 'fas fa-fw fa-share',
             'submenu' => [
+                
+
                 [
-                    'text' => 'levels',
-                    'url'  => '/admin/levels',
+                   'text'  => 'levels',
+                    'url'  => '#',
+                    'submenu'  => [
+                        [
+                            'text' => 'all levels',
+                            'url'  => '/admin/levels',
+                        ],
+
+                        [
+                            'text' => 'level attributes',
+                            'url'  => '/admin/levels/list_of_level_attributes',
+                        ],
+                    ]
                 ],
+
                 [
                     'text'    => 'payments',
                     'url'     => '#',
                     'submenu' => [
+                       
+                        [
+                            'text' => 'Transactions',
+                            'url'  => '/admin/transaction_numbers/list_of_transactions',
+                        ],
+
+
                         [
                             'text' => 'Pending Payments',
                             'url'  => '/admin/channel_owners/pending_payments',
                         ],
 
                         [
-                            'text' => 'Payment Methods',
-                            'url'  => '/admin/payments/list_of_payment_methods',
+                            'text' => 'Channel Owner Payment Method',
+                            'url'  => '/admin/payments/payment_methods_for_channel_owners',
+                        ],
+
+
+                        [
+                            'text' => 'Advertiser Payment Method',
+                            'url'  => '/admin/payments/payment_methods_for_advertiser',
                         ],
 
                         [

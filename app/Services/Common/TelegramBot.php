@@ -19,8 +19,10 @@ class TelegramBot
 
    public static function mtProto()
    {  
-      $token = env('TELEGRAM_BOT_TOKEN');
-      return new MadelineProtoAPI($token);
+       $token = env('TELEGRAM_BOT_TOKEN');
+       $madeLineProto = new MadelineProtoAPI('session.madeline');
+      return $madeLineProto->botLogin($token);
+       
    }
 
    public static function checkChannelAuthorization($channel_id)
