@@ -11,9 +11,17 @@
 |
 */
 
-Route::name('admin.')->prefix('admin')->group( function () {
+Route::middleware(['adminguest'])->group(function () {
+    
+    Route::get('/admin_login', 'Admin\Auth\LogInController@index')->name('login_page');
+    Route::post('/login',   'Admin\Auth\LogInController@login')->name('login');
+});
 
-    Route::get('/','Admin\IndexController@index');
+
+Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group( function () {
+    
+    Route::get('/logout','Admin\Auth\LogInController@logOut')->name('logout');
+    Route::get('/','Admin\IndexController@index')->name('home');
     Route::get('/list_of_channels','Admin\ChannelsController@listOfChannels');
     Route::get('/detail_about_advert/{id}','Admin\ChannelsController@viewMore')->name('detail_about_advert');
 

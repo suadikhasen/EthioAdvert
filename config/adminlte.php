@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => 'Ethio Telegram Advertisement',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -65,7 +65,7 @@ return [
     */
 
     'usermenu_enabled' => true,
-    'usermenu_header' => false,
+    'usermenu_header' => true,
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
     'usermenu_desc' => false,
@@ -194,7 +194,7 @@ return [
 
     'login_url' => 'login',
 
-    'register_url' => 'register',
+    'register_url' => false,
 
     'password_reset_url' => 'password/reset',
 
@@ -249,6 +249,13 @@ return [
         //     'label_color' => 'success',
         // ],
         ['header' => 'account_settings'],
+        
+        [
+            'text' => 'logout',
+            'url'  => 'admin/logout',
+            'icon' => 'fas fa-cogs',
+        ],
+        
         [
             'text' => 'profile',
             'url'  => 'admin/settings',
@@ -259,6 +266,9 @@ return [
             'url'  => 'admin/settings',
             'icon' => 'fas fa-fw fa-lock',
         ],
+
+        
+
         [
             'text'    => 'Others',
             'icon'    => 'fas fa-fw fa-share',

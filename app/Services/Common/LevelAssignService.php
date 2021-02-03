@@ -38,8 +38,8 @@ class LevelAssignService
         self::$channel_id                =    $channel_id;
         self::$quality_of_channel        =    $quality_of_channel;
 
-       self::$number_of_subscriber                       =  self::getNumberOfSubscriber();
-       self::$list_of_weekly_posts                       =  self::listOfWeeklyPosts();
+       self::$number_of_subscriber       =  self::getNumberOfSubscriber();
+       self::$list_of_weekly_posts       =  self::listOfWeeklyPosts();
          
        if(array_count_values(self::$list_of_weekly_posts->messages) < 0){
           return 'no post';
