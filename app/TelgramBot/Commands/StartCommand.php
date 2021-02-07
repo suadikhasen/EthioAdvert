@@ -56,8 +56,9 @@ class StartCommand extends Command
            ]);
 
            $this->replyWithMessage([
-               'text'           =>  'choose the one to registerer',
+               'text'           =>  '<b>😊 welcome !! 😊 </b>'."\n".  ' <b> choose the one to registerer </b>',
                'reply_markup'   =>   $reply_mark_up,
+               'parse_mode'      =>  'HTML',
            ]);
 
            Chat::$isCommand = true;

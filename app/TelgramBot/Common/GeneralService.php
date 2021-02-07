@@ -16,6 +16,7 @@ use Telegram\Bot\Objects\Message;
 use Andegna\DateTime;
 use Andegna\DateTimeFactory;
 use Andegna\Converter;
+use App\User;
 
 /**
  * Class GeneralService
@@ -424,6 +425,30 @@ class GeneralService
    public static function getEthiopianCurrentHour()
    {
        return (new DateTime())->getHour();
+   }
+
+   
+
+   private function channelMenus()
+   {
+       return [
+           'Channel',
+           'Payment Method',
+           'Earning Report',
+           'Paid Report',
+           'Posts',
+           'Remove Channel',
+           'Add Channel',
+           'Per Day Post',
+           'Post History',
+           'Main Menu',
+           'Back',
+           'Change Payment Method',
+           'Monthly Earning',
+           'Today Earning',
+           'Total Earning',
+           'All Channel'
+       ];
    }
 
 

@@ -5,11 +5,12 @@ namespace App\Services\Common;
 use danog\MadelineProto\API as MadelineProtoAPI;
 use danog\MadelineProto\MTProto;
 use Telegram\Bot\Api;
+use Telegram\Bot\Exceptions\TelegramSDKException;
 
 class TelegramBot 
 {
-   protected $bot;
-   protected $send_message;
+   protected static $bot;
+   protected static $send_message;
 
    public static function initialize()
    {
@@ -26,12 +27,17 @@ class TelegramBot
    }
 
    public static function checkChannelAuthorization($channel_id)
-   {
+   { 
      $bot= TelegramBot::initialize();
      $status = true; 
-     $administrator = $bot->getChatAdministrators([
-        'chat_id' => $channel_id,
-        ]);
+     
+      try{
+         $administrator = $bot->getChatAdministrators([
+            'chat_id' => $channel_id,
+            ]);
+      }catch(TelegramSDKException $exception){
+         return false;
+      }  
       foreach($administrator as $admin){
          if($admin->user->id === $bot->getMe()->id && $admin->user->isBot && $admin->canPostMessages && $admin->canEditMessages && $admin->canDeleteMessages && $admin->canSendMessages && $admin->canSendMediaMessages ){
             $status = true;
@@ -119,4 +125,22 @@ class TelegramBot
       }
       return $text_message;
    }
+
+   public static function sendNotification($message,$username)
+    {
+        self::initialize()->sendMessage([
+            'chat_id'       => $username,
+            'text'          => $message,
+            'parse_mode'    => 'HTML',
+        ]);
+    }
+
+    public static function makeDissApproveMessage()
+    {
+       return '❌ your channel is dis approved ❌'."\n".
+              '<b><i>your channel can be dis approve by the following cases</i></b>'."\n".
+              '⇒.when you wait more than one day to add bot as admin .'."\n".
+              '⇒.when your channel content is pornographic,ethnict conflict,false news .'."\n".
+              ' <b>you can apply again after you fix the issue</b> '."\n";
+    }
 }

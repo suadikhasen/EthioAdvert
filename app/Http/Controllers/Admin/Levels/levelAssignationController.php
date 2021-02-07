@@ -22,7 +22,9 @@ class levelAssignationController extends Controller
 
     public function assignLevel()
     {  
-        
+       if($this->quality === null){
+           return back()->with('error_notification','assign quality first');
+       } 
        if(TelegramBot::checkChannelAuthorization($this->channel_id)){
            return back()->with('error_notification','Telegram Bot Has No Authorization on this Channel');
        }else{

@@ -39,10 +39,8 @@ class AddChannel
         {
             switch ($response->question){
                 case 'username':
-                    Chat::createAnswer($response->id);
                     (new Channel(Chat::$text_message))->register();
                     break;
-
             }
         }else{
             Pages::textMessageWithMenuButton('something went wrong');

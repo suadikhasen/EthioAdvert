@@ -90,7 +90,7 @@ class LevelAssignService
     {
       $mtproto = TelegramBot::mtProto();
       return  $mtproto->messages->getHistory([
-          'peer'      => self::$chat_id,
+          'peer'      => self::$channel_id,
           'min_date'  => strtotime(Carbon::today()),
           'max_date'  => strtotime(Carbon::today()->addDays(8)),
           'limit'     => 100
@@ -150,7 +150,7 @@ class LevelAssignService
 
     private static function calculatePercentage($percent,$maximum_value,$given_value)
     {
-      return ($given_value/$maximum_value)*$percent;
+       return ($given_value/$maximum_value)*$percent;
     }
 
 }

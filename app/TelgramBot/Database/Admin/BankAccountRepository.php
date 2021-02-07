@@ -17,4 +17,14 @@ class BankAccountRepository
            'bank_name'  => $request->payment_method_name,
        ]);
    }
+
+   public static function findPaymentMethod($payment_id)
+   {
+     return BankAccount::find($payment_id);
+   }
+
+   public static function deletePaymentMethod($payment_id)
+   {
+       self::findPaymentMethod($payment_id)->delete();
+   }
 }

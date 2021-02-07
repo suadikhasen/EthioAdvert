@@ -5,7 +5,11 @@ namespace App\TelgramBot\Object;
 
 use App\Channels;
 use App\TelgramBot\Common\Pages;
+use App\TelgramBot\Database\Admin\ChannelRepository;
 use App\TelgramBot\Object\Chat;
+use Telegram\Bot\Exceptions\TelegramSDKException;
+use App\Services\Common\TelegramBot;
+
 /**
  * Class Channel
  * @package App\TelgramBot\Object
@@ -30,10 +34,16 @@ class Channel
     public function __construct($username)
    {
        $this->username = $username;
-       $this->channel_chat = Chat::$bot->getChat([
-           'chat_id' => $username
-       ]);
-       $this->channel_id = $this->channel_chat->getId();
+       try{
+        $this->channel_chat = Chat::$bot->getChat([
+            'chat_id' => $username
+        ]);
+       }catch(TelegramSDKException $exception){
+          Chat::sendTextMessage(' ❌ channel username not found please try again ❌');
+          exit;
+       }
+       $this->channel_id = $this->channel_chat->getId();    
+       
        $this->channel_name = $this->channel_chat->getTitle();
        $this->type = $this->channel_chat->getType();
 
@@ -46,21 +56,23 @@ class Channel
 
    public function register()
    {
-       if ($this->channel_chat){
+    if ($this->channel_chat){
+        
      if ($this->isChannel()){
-        if ($this->channel_member_amount > 1000){
+        if(Channels::where('channel_id',$this->channel_id)->exists()){
+            Chat::sendTextMessage(' ❌ your channel already exist ❌');
+            exit;
+          }
+        if ($this->channel_member_amount > 0){
             Channels::create([
                 'channel_id'       => $this->channel_id,
                 'username'         => $this->username,
                 'name'             => $this->channel_name,
                 'channel_owner_id' => Chat::$chat_id,
                 'number_of_member' => $this->channel_member_amount,
-
-
             ]);
-
-            Pages::textMessageWithMenuButton('your channel is registered please add @adddvert_bot as admin in your channel and we will approve you soon');
             Chat::deleteTemporaryData();
+            Pages::textMessageWithMenuButton('✅✅your channel  registered successfully !! ✅✅'."\n".'❕ please add @EthioAdvertisementBot as admin in your channel and we will approve you soon ❕');
         }else{
             Pages::textMessageWithMenuButton('your channel member is less than 1000 currently it can not be registered Please try later thank you !');
         }

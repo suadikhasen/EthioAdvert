@@ -50,10 +50,12 @@ if (!function_exists('active_status')){
       if($status === 1){
           return 'Pending';
       }elseif($status === 2){
-          return 'Active';
+          return 'Not Started';
       }elseif($status === 3){
-          return 'Finsh package ';
+          return 'Active Now ';
       }elseif($status === 4){
+          return 'finished';
+      }elseif($status === 5){
           return 'Expired';
       }
       
@@ -75,7 +77,7 @@ if (!function_exists('channelLevel')){
     function channelLevel($channel)
     {
       if($channel->level_id === null){
-          return '<b>not Assigned</b>';       
+          return 'not Assigned';       
       }
      return $channel->level->level_name;
     }

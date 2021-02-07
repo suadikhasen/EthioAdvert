@@ -74,5 +74,12 @@ class AdvertRepository
        ]);
     }
 
+    public static function updateApproveStatus($advert_id,$approve_status)
+    {
+       self::findAdvert($advert_id)->update([
+         'approve_status'  =>  $approve_status,
+       ]);
+    }
+
     
 }

@@ -45,5 +45,17 @@ class AdvertsController extends Controller
          return view('admin.adverts.post_history',compact(['telegram_posts_of_the_advert','advert']));
     }
 
+    public function approveAdvert($advert_id)
+    {
+      AdvertRepository::updateApproveStatus($advert_id,true);
+      return back()->with('success_notification','advert approved successfully');
+    }
 
+    public function disApproveAdvert($advert_id)
+    {
+        AdvertRepository::updateApproveStatus($advert_id,false);
+        return back()->with('success_notification','advert dis approved successfully');
+    }
+
+    
 }

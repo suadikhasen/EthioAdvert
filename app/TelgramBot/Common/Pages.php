@@ -47,7 +47,7 @@ class Pages
     /**sends to the user start page when the start button is pressed or for unregistered users
      * @return bool
      */
-    public static function startPage():bool
+    public static function startPage()
    {
        self::$keyboard = [
            [
@@ -131,7 +131,8 @@ class Pages
            'chat_id'         =>   Chat::$chat_id,
            'text'            =>   self::$text,
            'parse_mode'      =>  'HTML',
-           'reply_markup'    =>   $reply_markup
+           'reply_markup'    =>   $reply_markup,
+           'disable_notification' => false,
        ]);
 
    }
@@ -254,7 +255,7 @@ class Pages
     {
         if ($add_type === 'add') {
             Chat::createQuestion('payment_method','bank_code');
-            self::$text = 'you have no payment Method select Your Payment Method To Add New Payment Method';
+            self::$text = '⛔️<b>you have no payment Method </b>'."\n".'➕<b>select your payment method to add new payment method </b>';
         }else{
             Chat::createQuestion('change_payment_method','bank_code');
             self::$text = 'Select Your Payment Method To Change Payment Method';
@@ -268,18 +269,23 @@ class Pages
     public static function paymentMethodPage(): void
     {
         $list_of_payment_method = BankRepository::getAllBank();
-        $mark_up = Keyboard::make(['resize_keyboard' => true]);
-        foreach ($list_of_payment_method as  $method){
+        if($list_of_payment_method->isEmpty()){
+            Chat::sendTextMessage('no available payment method now');
+        }else{
+            $mark_up = Keyboard::make(['resize_keyboard' => true]);
+            foreach ($list_of_payment_method as  $method){
+                $mark_up = $mark_up->row(Keyboard::button([
+                    'text' => $method->bank_name
+                ]));
+            }
             $mark_up = $mark_up->row(Keyboard::button([
-                'text' => $method->bank_name
+                'text' => 'Main Menu'
+            ]),Keyboard::button([
+                'text' => 'Back'
             ]));
+            self::sendMessage($mark_up);
         }
-        $mark_up = $mark_up->row(Keyboard::button([
-            'text' => 'Main Menu'
-        ]),Keyboard::button([
-            'text' => 'Back'
-        ]));
-        self::sendMessage($mark_up);
+        
     }
 
 

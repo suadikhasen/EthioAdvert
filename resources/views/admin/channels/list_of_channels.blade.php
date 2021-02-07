@@ -3,6 +3,12 @@
     {{ $tittle }}
 @endsection
 @section('main_content')
+    @if (Session::has('success_notification'))
+    @include('admin.Includes.success_notification',['notification' => Session::get('success_notification', 'error occured')])     
+    @endif
+    @if (Session::has('error_notification'))
+        @include('admin.Includes.error_notification',['notification' => Session::get('error_notification', 'error occured')])     
+    @endif
     <table class="table table-bordered table-dark">
         <thead>
             <b>{{ $table_header }}</b> <br>

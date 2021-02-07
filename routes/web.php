@@ -18,12 +18,17 @@ Route::middleware(['adminguest'])->group(function () {
 });
 
 
-Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group( function () {
+Route::middleware(['admin_auth'])->name('admin.')->prefix('admin')->group( function () {
     
     Route::get('/logout','Admin\Auth\LogInController@logOut')->name('logout');
     Route::get('/','Admin\IndexController@index')->name('home');
     Route::get('/list_of_channels','Admin\ChannelsController@listOfChannels');
     Route::get('/detail_about_advert/{id}','Admin\ChannelsController@viewMore')->name('detail_about_advert');
+    Route::get('/profile','Admin\ProfileController@index');
+    Route::get('/change_password','Admin\ProfileController@changePasswordPage')->name('change_password_page');
+    Route::post('/change_password' , 'Admin\ProfileController@changePassword')->name('change_password');
+    Route::get('/add_admin','Admin\ProfileController@addAdminPage')->name('add_admin_page');
+    Route::post('/add_admin','Admin\ProfileController@addAdmin')->name('add_admin');
 
     Route::prefix('channels')->name('channels.')->group(function(){
       
@@ -31,16 +36,24 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group( functio
         Route::get('/un_block_channels/{id}','Admin\Channel\BlockController@unBlockChannel')->name('unblock_channel');
         Route::get('/channels_advert/{channel_id}','Admin\Adverts\AdvertsController@viewChannelAdverts')->name('view_channels_advert');
         Route::get('/update_channel_information/{channel_id}','Admin\Channel\UpdateInformationOfChannel@updateBasicInformation')->name('update_information');
-        
+        Route::post('/assign_level/{channel_id/channel_owner_id/quality}','Admin\Levels\levelAssignationController@assignLevel')->name('assign_level');
+        Route::get('/add_qualty/{channel_id}','Admin\Levels\QualityController@addQualityPage')->name('add_quality');
+        Route::post('/add_qualty/{channel_id}','Admin\Levels\QualityController@saveQuality')->name('save_quality');
+        Route::get('/approve_channels/{channel_owner_id}/{channel_id}','Admin\Channels\ApproveController@approve')->name('approve_channel');
+        Route::get('/dis_approve_channels/{channel_owner_id}/{channel_id}','Admin\Channels\DisApproveController@disApprove')->name('dis_approve_channel');
+
     });
 
     Route::prefix('adverts')->name('adverts.')->group(function(){
-       
+        
         Route::get('/list_of_adverts','Admin\Adverts\AdvertsController@listOfAdverts')->name('list_of_adverts');
         Route::get('/detail_about_advert/{advert_id}','Admin\Adverts\AdvertsController@detailAboutAdverts')->name('detail_about_advrt');
         Route::get('/search_adverts','Admin\Adverts\SearchController@search')->name('search_adverts');
         Route::get('/post_advert/{advert_id}','Admin\Adverts\AdvertPostingController@post')->name('post_the_advert');
         Route::get('/view_post_history/{advert_id}','Admin\Adverts\AdvertsController@viewPostHistory')->name('view_post_history');
+        Route::get('/approve_advert/{advert_id}','Admin\Adverts\AdvertsController@approveAdvert')->name('approve_advert');
+        Route::get('/dis_approve_advert/{advert_id}','Admin\Adverts\AdvertsController@disApproveAdvert')->name('dis_approve_advert');
+        
     });
 
 
@@ -91,14 +104,21 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group( functio
      Route::post('/save_new_payment_method_for_channel_owners','Admin\Payments\PaymentMethodController@addNewPaymentMethodsForChannelOwners')->name('save_new_payment_method_for_channel_owners');
      Route::get('/payment_methods_for_advertiser','Admin\Payments\PaymentMethodController@forAdvertiser')->name('list_of_payment_methods_for_advertiser');
      Route::get('/add_new_payment_method_for_advertiser','Admin\Payments\PaymentMethodController@addNewPaymentMethodForAdvertiserspage')->name('add_new_payment_method_for_advertiser');
-     Route::post('/save_new_payment_method_for_channel_owners','Admin\Payments\PaymentMethodController@saveNewPaymentMethodsForAdvertiser')->name('save_new_payment_method_for_advertiser');
-     
+     Route::post('/save_new_payment_method_for_advertiser','Admin\Payments\PaymentMethodController@saveNewPaymentMethodsForAdvertiser')->name('save_new_payment_method_for_advertiser');
+     Route::get('/delete_payment_method_of_channel_owners/{payment_id}' , 'Admin\Payments\PaymentMethodController@deleteChannelOwnersPaymentMethod')->name('delete_payment_method_of_channel_owners');
 
-     
    }); 
 
    Route::prefix('transaction_numbers')->name('transaction_numbers.')->group(function () {
 
        Route::get('/list_of_transactions','Admin\TransactionNumber\TransactionNumberController@listOfTransactionNumbers')->name('list_of_transactions');
+       Route::get('/add_new_transaction_number','Admin\TransactionNumber\TransactionNumberController@addNewTransactionNumberPage')->name('add_new_transaction_number');
+       Route::post('/add_new_transaction_number','Admin\TransactionNumber\TransactionNumberController@saveTransactionNumber')->name('save_transaction_number');
+       Route::get('/edit_transaction_number/{id}','Admin\TransactionNumber\TransactionNumberController@editTransactionPage')->name('edit_transaction_page');
+       Route::post('/edit_transaction_number/{id}','Admin\TransactionNumber\TransactionNumberController@editTransaction')->name('edit_transaction');
+       Route::get('/delete_transaction/{transaction_id}','Admin\TransactionNumber\TransactionNumberController@deleteTransaction')->name('delete_transaction');
    });
+
+   
+
 });

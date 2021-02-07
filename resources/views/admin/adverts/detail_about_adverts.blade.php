@@ -4,16 +4,30 @@
 @endsection
 @section('main_content')
     <div class="row">
+        <div class="container">
+            @if (Session::has('success_notification'))
+                @include('admin.Includes.success_notification',['notification' => Session::get('success_notification', 'error occured')])     
+            @endif
+            @if (Session::has('error_notification'))
+                @include('admin.Includes.error_notification',['notification' => Session::get('error_notification', 'error occured')])     
+            @endif
+        </div>
         <div class="mb-4 col-md-10 bg-dark align-content-center">
-            <a href="#" class="btn btn-primary mr-2 mt-2 mb-2"> Approve Advert</a>
-            <a href="{{ route('admin.adverts.post_the_advert',$advert->id)}}" class="btn btn-success mr-2 mt-2 mb-2"> Post Advert</a>
+            @if ($advert->approve_status)
+                 <a href="{{ route('admin.adverts.dis_approve_advert',$advert->id)}}" class="btn btn-primary mr-2 mt-2 mb-2"  > Un Approve Advert</a>
+            @else
+             <a href="{{ route('admin.adverts.approve_advert',$advert->id) }}" class="btn btn-primary mr-2 mt-2 mb-2"  > Approve Advert</a>
+            @endif
+            @if ($advert->active_status == 2 || $advert->active_status == 3)
+                 <a href="{{ route('admin.adverts.post_the_advert',$advert->id)}}" class="btn btn-success mr-2 mt-2 mb-2"> Post Advert</a>
+            @endif
             <a href="{{ route('admin.adverts.view_post_history',$advert->id)}}" class="btn btn-info mr-2 mt-2 mb-2">  View Post History</a>
 
         </div>
         <div class="col-md-10">
             <div class="card card-success">
                 <div class="card-title>
-                    <b class="bg-primary" >  {{ $advert->name_of_the_advert }} information </b>
+                    <b class="bg-primary" > {{ $advert->name_of_the_advert }} information </b>
                 </div>
 
                 <div class="card-body">

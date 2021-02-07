@@ -158,7 +158,8 @@ class Chat
         self::$bot->sendMessage([
             'chat_id'    => self::$chat_id,
             'text'       => $message,
-            'parse_mode' =>  'HTML'
+            'parse_mode' =>  'HTML',
+            'disable_notification' => false,
         ]);
 
     }
@@ -299,4 +300,6 @@ class Chat
        'reply_markup'  => $keyboard
      ]);
     }
+
+    
 }

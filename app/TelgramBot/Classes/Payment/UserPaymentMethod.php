@@ -84,7 +84,7 @@ class UserPaymentMethod
         $last_asked_questions = Temporary::where('chat_id',Chat::$chat_id)->where('type',Chat::type())->get();
         foreach ($last_asked_questions as $single){
             if ($single->question === 'bank_code'){
-                $array['bank_code'] = BankRepository::getBankInformationByName($array['bank_code'])->id;
+                $array['bank_code'] = BankRepository::getBankInformationByName($single->answer)->id;
             }else{
                 $array[(string)$single->question] = $single->answer;
             }

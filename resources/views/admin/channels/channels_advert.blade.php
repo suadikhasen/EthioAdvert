@@ -5,7 +5,7 @@
 @section('main_content')
 <div class="row">
     <div class="col-md-12 ">
-        <b> Total Number Of Advert: {{ $number_of_advert}}  Total Earning : {{ $total_earning ? }}</b>
+        <b> Total Number Of Advert: {{ $number_of_advert}}  Total Earning : {{ $total_earning  }}</b>
     </div>
     @foreach ($adverts as $advert)
         <div class="card card-primary">

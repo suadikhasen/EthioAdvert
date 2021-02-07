@@ -17,8 +17,20 @@ class ChannelRepository
      * @return mixed
      */
     public static  function allChannelsOfAuser()
-  {
+   {
       return Channels::where('channel_owner_id',Chat::$chat_id)->where('remove_status',false)->get();
+   }
+
+   public static function updateRemoveStatus($channel_id,$status)
+   {
+      self::findChannel($channel_id)->update([
+        'remove_status' => $status,
+      ]);
+   }
+
+  public static function findByNameAndChatId($chat_id,$name)
+  {
+    return Channels::where('channel_owner_id',$chat_id)->where('name',$name)->first();
   }
 
     /**
@@ -104,6 +116,11 @@ class ChannelRepository
        Channels::find($id)->update([
          'block_status' => $status,
        ]);
+    }
+
+    public static function findChannel($channel_id)
+    {
+      return Channels::find($channel_id);
     }
 
 }

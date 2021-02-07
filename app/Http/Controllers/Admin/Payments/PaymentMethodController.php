@@ -43,6 +43,12 @@ class PaymentMethodController extends Controller
         return back()->with('success_notification','payment method added successfully');
     }
 
+    public function deleteChannelOwnersPaymentMethod($payment_method_id)
+    {
+        BankAccountRepository::deletePaymentMethod($payment_method_id);
+        return back()->with('success_notification','payment method deleted successfully');
+    }
+
     public function addNewPaymentMethodForAdvertiserspage()
     {
         return view('admin.advertiser.add_new_payment_method_for_advertiser');

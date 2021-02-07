@@ -40,7 +40,7 @@ class AllChannel
      */
     private function processQuestion($response): void
     {
-        if ($response->answers === null){
+        if ($response->answer === null){
           $this->sendDetailAboutChannel();
         }else{
             Pages::textMessageWithMenuButton('something went wrong');

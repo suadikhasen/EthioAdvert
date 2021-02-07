@@ -320,6 +320,8 @@ class IndexController extends Controller
            case 'Edit_Number_Of_Days':
             (new EditNumberOfDays(Cache::get('edit_advert_id'.Chat::$chat_id)));
               break;
+           default:
+            Chat::sendTextMessage('⚠️ unknown command or input ⚠️');   
        }
 
     }

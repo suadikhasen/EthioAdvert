@@ -19,7 +19,7 @@
                     @enderror
                 </div>
                 @csrf
-                <button class="btn btn-dark btn-block">Add</button>
+                <button class="btn btn-dark btn-block"> Add </button>
             </form>
         </div>
     </div>

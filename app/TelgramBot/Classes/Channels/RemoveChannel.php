@@ -3,7 +3,7 @@
 
 namespace App\TelgramBot\Classes\Channels;
 
-
+use App\TelgramBot\Common\GeneralService;
 use App\TelgramBot\Common\Pages;
 use App\TelgramBot\Database\ChannelRepository;
 use App\TelgramBot\Object\Chat;
@@ -21,8 +21,13 @@ class RemoveChannel
     public function handle(bool $isCommand = false)
    {
        if ($isCommand){
-          Chat::createQuestion('remove_channel','click_channel_name');
-          Pages::removeChannelsPage();
+           if(!ChannelRepository::checkExistenceOfAchannel(Chat::$chat_id)){
+              Chat::sendTextMessage('you have no channel');
+           }else{
+            Chat::createQuestion('remove_channel','click_channel_name');
+            Pages::removeChannelsPage();
+           }
+          
        }else{
            $this->processQuestion(Chat::lastAskedQuestion());
        }
@@ -35,19 +40,29 @@ class RemoveChannel
      */
     private function processQuestion($response): void
     {
-        if ($response->answers === null){
+        if ($response->answer === null){
             Chat::createAnswer($response->id);
             $this->sendConfirmationQuestion();
         }else{
            if (Chat::getCallBackQuery()->getData() === 'NO')
            {
                $this->cancelConfirmation();
+           }elseif(Chat::getCallBackQuery()->getData() === 'YES'){
+               $channel = ChannelRepository::findByNameAndChatId(Chat::$chat_id,$response->answer);
+               ChannelRepository::updateRemoveStatus($channel->channel_id,true);
+               Chat::deleteTemporaryData();
+               Chat::sendEditTextMessage("your channel removed successfully",null,GeneralService::getChatIdFromCallBack(),GeneralService::getMessageIDFromCallBack());
+               Pages::channelOwnerPage();
+           }else{
+               Chat::sendTextMessage('please use inline keyboard');
            }
         }
     }
 
+    
+
     /**
-     * @throws \Telegram\Bot\Exceptions\TelegramSDKException
+     * @throws \Telegram\Bot\Exceptions\TelegramSDKException    
      */
     private function sendConfirmationQuestion(): void
     {
@@ -57,11 +72,11 @@ class RemoveChannel
             'callback_data' =>  'NO'
             ]),
             Keyboard::inlineButton([
-                'text'          => ' "\U00002716" Yes',
-                'callback_data' => 'Yes'
+                'text'          => 'YES',
+                'callback_data' => 'YES'
             ])
             );
-        Chat::sendTextMessageWithInlineKeyboard('Are You Sure You Want Remove '.Chat::$text_message,$keyboard);
+        Chat::sendTextMessageWithInlineKeyboard('Are You Sure You Want Remove '.Chat::$text_message.' channel',$keyboard);
     }
 
     /**

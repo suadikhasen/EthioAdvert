@@ -47,4 +47,28 @@ class ChannelRepository
     {
         return TelegramPost::where('channel_id',$telegram_channel_id)->where('active_status','<>',1)->whereBetween('created_at',[$initial_date,$final_date])->select('ethio_advert_post_id')->distinct()->count();
     }
+
+    public static function findChannel($channel_id)
+    {
+        return Channels::find($channel_id);
+    }
+
+    public static function updateChannelQuality($channel_id,$quality)
+    {
+        Channels::find($channel_id)->update([
+            'channel_quality'  => $quality
+        ]);
+    }
+
+    public static function updateApproveStatus($channel_id,$status)
+    {
+        Channels::find($channel_id)->update([
+            'approve_status'  => $status
+        ]);
+    }
+
+    public static function deleteChannel($channel_id)
+    {
+        self::findChannel($channel_id)->delete();
+    }
 }
