@@ -5,10 +5,7 @@ namespace App\TelgramBot\Common;
 use App\TelgramBot\Database\BankRepository;
 use App\TelgramBot\Database\ChannelRepository;
 use App\TelgramBot\Database\UserPaymentRepositories;
-use App\TelgramBot\Extend\UserInformation;
-use App\TelgramBot\Object\Bank;
 use App\TelgramBot\Object\Chat;
-use phpDocumentor\Reflection\Types\Parent_;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Keyboard\Keyboard;
 /**
@@ -58,8 +55,8 @@ class Pages
            ]
        ];
        self::$text = 'please register  by selecting one of those';
-       return self::makeMarkUp()->sendMessage();
-
+       self::makeMarkUp();
+       self::sendMessage(self::$reply_markup);
    }
 
     /**sends homepage for advertiser
@@ -76,7 +73,7 @@ class Pages
         ]))->row(Keyboard::button([
             'text' =>'Verify Payment'
         ]),Keyboard::button([
-            'text' =>'Help'
+            'text' =>'Contact Us'
         ]));
         self::sendMessage($markUp);
    }
@@ -87,7 +84,7 @@ class Pages
      */
     public static function  channelOwnerPage():void
    {
-       self::$text = 'You Are Now On HomePage';
+       self::$text = '🏠 Home Page';
        $markUp = Keyboard::make(['resize_keyboard' => true])->row(Keyboard::button([
            'text' => 'Channel'
        ]),Keyboard::button([
@@ -101,7 +98,7 @@ class Pages
        ]),Keyboard::button([
            'text' => 'Pending Payment',
        ]))->row(Keyboard::button([
-           'text'  => 'Help'
+           'text'  => 'Contact Us'
        ]));
        self::sendMessage($markUp);
    }
@@ -196,7 +193,7 @@ class Pages
      */
     public static function listOfChannelsPage(): void
     {
-       $list_of_channels = ChannelRepository::allChannelsOfAuser();
+       $list_of_channels = ChannelRepository::allChannelsOfAuser(Chat::$chat_id);
        $mark_up  = Keyboard::make(['resize_keyboard' => true]);
        foreach ($list_of_channels as $single){
            $mark_up =  $mark_up->row(Keyboard::button([
@@ -211,7 +208,7 @@ class Pages
 
     public static function removeChannelsPage()
     {
-        $list_of_channels = ChannelRepository::allChannelsOfAuser();
+        $list_of_channels = ChannelRepository::allChannelsOfAuser(Chat::$chat_id);
         $mark_up  = Keyboard::make(['resize_keyboard' => true]);
         foreach ($list_of_channels as $single){
             $mark_up =  $mark_up->row(Keyboard::button([
@@ -280,8 +277,6 @@ class Pages
             }
             $mark_up = $mark_up->row(Keyboard::button([
                 'text' => 'Main Menu'
-            ]),Keyboard::button([
-                'text' => 'Back'
             ]));
             self::sendMessage($mark_up);
         }

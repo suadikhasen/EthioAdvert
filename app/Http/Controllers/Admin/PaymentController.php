@@ -13,7 +13,8 @@ class PaymentController extends Controller
     public static function pendingPayments()
     {
         $pending_payments = PaymentRepository::listOfPendingPayments();
-        return view('admin.channel_owner.pending_payments',['pending_payments'   =>  $pending_payments]);
+        $total = PaymentRepository::$total;
+        return view('admin.channel_owner.pending_payments',['pending_payments'   =>  $pending_payments,'total' => $total]);
     }
 
     public function goToPayPage($user_id,$pending_payment)

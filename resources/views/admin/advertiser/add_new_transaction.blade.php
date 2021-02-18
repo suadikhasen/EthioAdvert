@@ -21,6 +21,16 @@
                             <small class="text-bold text-red">{{$message}}</small>
                         @enderror
                     </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount Of Money </label>
+                        <input class="form-control" id="amount" name="amount" placeholder="enter amount" required autofocus>
+                        @error('amount')
+                            <small class="text-bold text-red">{{$message}}</small>
+                        @enderror
+                    </div>
+
+                    
                     <div class="form-group">
                         <label for="payment_method">Select Payment Method</label>
                         <select class="form-control" id="payment_method" name="payment_method">

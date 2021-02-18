@@ -27,7 +27,7 @@ class DetailAdvertInfo extends ViewAdverts
 
    protected function makeTextMessage()
    {
-       $this->advert_text_message = PromotionService::makeAdvet($this->advert,$this->advert->package);
+       $this->advert_text_message = PromotionService::makeAdvet($this->advert);
    }
 
 
@@ -41,7 +41,7 @@ class DetailAdvertInfo extends ViewAdverts
     private function detailInfoKeyBoard()
     {
         return Keyboard::make()->inline()->row(Keyboard::inlineButton([
-            'text'           => 'Back',
+            'text'           =>  'Back',
             'callback_data'  =>  'back_to_view_advert/'.$this->advert->id
         ]));
     }
@@ -58,6 +58,7 @@ class DetailAdvertInfo extends ViewAdverts
         if (!$this->checkAdvertHasPhoto())
             Chat::sendEditTextMessage($this->advert_text_message,$this->advert_keyboards,GeneralService::getChatIdFromCallBack(),GeneralService::getMessageIDFromCallBack());
         else {
+            Chat::deleteMessage(Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
             Chat::sendPhoto(Chat::$chat_id,$this->advert->image_path,$this->advert_text_message,$this->advert_keyboards);
         }
         GeneralService::answerCallBackQuery('detail Information displayed');

@@ -34,7 +34,9 @@ class StartCommand extends Command
      * @throws TelegramSDKException
      */
     public function handle()
-    {   Chat::$update = $this->getUpdate();
+    {   
+        Chat::$isCommand = true;
+        Chat::$update = $this->getUpdate();
         Chat::$chat_id   = Chat::$update->getMessage()->getChat()->getId();
        if (isRegistered(Chat::$chat_id)){
           if (userType() === 'Advertiser'){
@@ -56,12 +58,12 @@ class StartCommand extends Command
            ]);
 
            $this->replyWithMessage([
-               'text'           =>  '<b>😊 welcome !! 😊 </b>'."\n".  ' <b> choose the one to registerer </b>',
+               'text'           =>  '<b> 😊 welcome !! 😊 </b>'."\n".  ' <b> choose the option to register </b>',
                'reply_markup'   =>   $reply_mark_up,
                'parse_mode'      =>  'HTML',
            ]);
 
-           Chat::$isCommand = true;
        }
+
     }
 }

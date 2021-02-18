@@ -5,6 +5,7 @@ namespace App\TelgramBot\Database;
 
 
 use App\PaymentVerification;
+use App\TransactionNumbers;
 
 class PaymentVerificationRepository
 {
@@ -16,10 +17,9 @@ class PaymentVerificationRepository
             ->exists();
     }
 
-    public static function isRefAvailable(int $advertiser_id, string $ref_number ,$payment_code)
+    public static function isRefAvailable($ref_number ,$payment_code)
     {
-        return PaymentVerification::where('advertiser_id',$advertiser_id)
-            ->where('ref_number',$ref_number)
+        return TransactionNumbers::where('ref_number',$ref_number)
             ->where('used_status',false)
             ->where('payment_method_code',$payment_code)
             ->first();

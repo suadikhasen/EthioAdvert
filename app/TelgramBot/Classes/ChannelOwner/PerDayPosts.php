@@ -49,10 +49,8 @@ class PerDayPosts
      */
     private function processCommand()
     {
-      if (ChannelRepository::checkExistenceOfAchannel())
-         $this->sendListOfChannels();
-      else
-        ChannelMessages::noChannel();
+      $text_message  = '➡️ <b> Currently the number of posts on each channel is 1.</b>';
+      Chat::sendTextMessage($text_message);
     }
 
     /**
@@ -81,7 +79,7 @@ class PerDayPosts
      */
     private function makeKeyboard()
     {
-        $channels =  ChannelRepository::allChannelsOfAuser();
+        $channels =  ChannelRepository::allChannelsOfAuser(Chat::$chat_id);
         $this->channels_inline_keyboard = Keyboard::make()->inline();
         foreach ($channels as $channel)
         {

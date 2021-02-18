@@ -36,7 +36,7 @@ Route::middleware(['admin_auth'])->name('admin.')->prefix('admin')->group( funct
         Route::get('/un_block_channels/{id}','Admin\Channel\BlockController@unBlockChannel')->name('unblock_channel');
         Route::get('/channels_advert/{channel_id}','Admin\Adverts\AdvertsController@viewChannelAdverts')->name('view_channels_advert');
         Route::get('/update_channel_information/{channel_id}','Admin\Channel\UpdateInformationOfChannel@updateBasicInformation')->name('update_information');
-        Route::post('/assign_level/{channel_id/channel_owner_id/quality}','Admin\Levels\levelAssignationController@assignLevel')->name('assign_level');
+        Route::get('/assign_level/{channel_id}','Admin\Levels\levelAssignationController@assignLevel')->name('assign_level');
         Route::get('/add_qualty/{channel_id}','Admin\Levels\QualityController@addQualityPage')->name('add_quality');
         Route::post('/add_qualty/{channel_id}','Admin\Levels\QualityController@saveQuality')->name('save_quality');
         Route::get('/approve_channels/{channel_owner_id}/{channel_id}','Admin\Channels\ApproveController@approve')->name('approve_channel');

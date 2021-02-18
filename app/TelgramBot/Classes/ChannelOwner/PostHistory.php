@@ -23,7 +23,7 @@ class PostHistory
     /**
      * @var string
      */
-    private $text = '<strong><i>List Of Posts</i></strong>';
+    private $text = '<b> ➡️ <i>List Of Posts </i></b>'."\n\n";
     /**
      * @var Keyboard
      */
@@ -39,10 +39,14 @@ class PostHistory
      * @throws TelegramSDKException
      */
     public function handle(int $page_number,bool  $inline)
-    {
+    {  
+        if(!TelegramPostRepository::checkExistenceOfPost(Chat::$chat_id)){
+            $text_message  = '➡️ <b> currently adverts are not posted to your channel.</b>';
+            Chat::sendTextMessage($text_message);
+            exit;
+        }
        $this->page_number = $page_number;
        $this->list_of_posts = TelegramPostRepository::findListOfAdverts(Chat::$chat_id,GeneralService::default_number_of_posts,$page_number);
-       $this->list_of_posts = json_decode($this->list_of_posts);
        $this->makeTextForListOfPromotions($this->list_of_posts);
        $this->makeKeyBoard($this->list_of_posts);
        $this->sendMessage($inline);
@@ -57,10 +61,10 @@ class PostHistory
 
     private function makeKeyBoard($list)
     {
-        if ($list->prev_page_url === null){
-            if ($list->next_page_url !== null)
+        if ($list->previousPageUrl() == null){
+            if ($list->nextPageUrl() != null)
                 $this->keyboard = $this->nextKeyBoard();
-        }elseif($list->next_page_url !== null)
+        }elseif($list->nextPageUrl() != null)
             $this->keyboard = $this->bothKeyboard();
         else
             $this->keyboard = $this->previousKeyboard();
@@ -73,8 +77,10 @@ class PostHistory
 
     private function sendMessage(bool $inline)
     {
-       if ($inline)
-           Chat::sendEditTextMessage($this->text,$this->keyboard,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
+       if ($inline){
+        Chat::sendEditTextMessage($this->text,$this->keyboard,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
+        GeneralService::answerCallBackQuery('post history page displayed'); 
+       }
        else
            Chat::sendTextMessageWithInlineKeyboard($this->text,$this->keyboard);
     }
@@ -85,12 +91,13 @@ class PostHistory
     private function makeTextForListOfPromotions($list)
     {
         $no = $this->postNumbers();
-        foreach ($list->data as $advert){
-            $this->text = $this->text.'<strong>'.$no.', '.$advert->adverts->name_of_the_advert.'</strong>'."\n".
-                '<strong>Earning:</strong>'.$advert->earning."\n".
-                '<strong>Number Of View:</strong>'.$advert->number_of_view."\n".
-                '<strong>Posted On: </strong>'.$advert->channelsName->name.' channel'."\n".
-                '<strong>Status: </strong>'.$this->activeStatus($advert->active_status);
+        foreach ($list as $advert){
+            $this->text = $this->text.
+                '<b>Advert Number : </b>'.$no."\n\n".
+                '<b>Name Of The Advert :</b>'.$advert->adverts->name_of_the_advert."\n".
+                '<b>Earning :</b>'.$advert->adverts->channel_price."\n".
+                '<b>Posted On channel : </b>'.$advert->channelsName->name."\n".
+                '<b>Status : </b>'.$this->activeStatus($advert->adverts->active_status);
             $no++;
         }
 
@@ -146,12 +153,14 @@ class PostHistory
      * @param bool $active_status
      * @return string
      */
-    private function activeStatus(bool $active_status):string
+    private function activeStatus( $active_status):string
     {
-        if ($active_status)
-            return  'active';
+        if ($active_status == 2)
+            return  'opened';
+        elseif($active_status == 3)
+            return 'closed';
         else
-            return 'posted';
+           return 'not determined';    
     }
 
 }

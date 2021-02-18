@@ -20,19 +20,24 @@ class ViewAdverts
     function __construct($advert_id)
     {
         $this->advert = AdvertsPostRepository::findAdvert($advert_id);
+        if($this->advert == null){
+            exit;
+        }
     }
 
     public function sendListOfOptions($edit=false)
    {
       $this->makeTextMessage();
       $this->makeMainKeyboard();
-       if ($edit){
+      $image_path = $this->advert->image_path;
+       if ($edit && is_null($image_path)){
            Chat::sendEditTextMessage($this->advert_text_message,$this->advert_keyboards,GeneralService::getChatIdFromCallBack(),GeneralService::getMessageIDFromCallBack());
        }else{
+           if(!is_null($image_path) && $edit){
+               Chat::deleteMessage(Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
+           } 
            Chat::sendTextMessageWithInlineKeyboard($this->advert_text_message,$this->advert_keyboards);
        }
-
-
    }
 
     protected function makeTextMessage()
@@ -44,10 +49,12 @@ class ViewAdverts
 
     private function textMessage()
     {
-       return  '<strong>'.' ----'.$this->advert->name_of_the_advert.' Advert Information</strong> ----'."\n".
-        '<strong>price:</strong>'.$this->advert->amount_of_payment."\n".
-        '<strong>Initial Date:</strong>'.$this->advert->initial_date."\n";
-        
+       return  
+       '⟹ <b> View More Page</b>'."\n\n".
+       '⇒ <strong> Id : </strong>'.$this->advert->id."\n\n".
+       '⇒ <strong> Name : </strong>'.$this->advert->name_of_the_advert."\n\n".
+       '⇒ <strong> price: </strong>'.$this->advert->amount_of_payment."\n\n";
+             
     }
 
     private function makeMainKeyboard()
@@ -60,14 +67,8 @@ class ViewAdverts
    private function mainKeyboard()
    {
        return Keyboard::make()->inline()->row(Keyboard::inlineButton([
-           'text'           => 'Edit Advert',
-           'callback_data'  => 'edit_advert/'.$this->advert->id
-       ]))->row(Keyboard::inlineButton([
-           'text'           => 'View Full Advert Information',
+           'text'           => 'View Detail',
            'callback_data'  => 'view_advert_info/'.$this->advert->id
-       ]))->row(Keyboard::inlineButton([
-           'text'           => 'Re Order Advert',
-           'callback_data'  => 're_order_advert/'.$this->advert->id
        ]))->row(Keyboard::inlineButton([
            'text'           => 'Delete Advert',
            'callback_data'  => 'delete_advert/'.$this->advert->id

@@ -31,7 +31,6 @@ use App\TelgramBot\Classes\Paid\PaidReport;
 use App\TelgramBot\Classes\Paid\PendingPayment;
 use App\TelgramBot\Classes\Payment\ChangeUserPaymentMethod;
 use App\TelgramBot\Classes\Payment\UserPaymentMethod;
-use App\TelgramBot\Commands\SkipCommand;
 use App\TelgramBot\Commands\StartCommand;
 use App\TelgramBot\Common\GeneralService;
 use App\TelgramBot\Common\Pages;
@@ -46,6 +45,7 @@ use App\Services\Command;
 use App\TelgramBot\Classes\Advertiser;
 use App\TelgramBot\Classes\Advertiser\AddPromotionClass\LevelOfChannel;
 use App\TelgramBot\Classes\Advertiser\AddPromotionClass\TimeOfTheAdvertPerDay;
+use App\TelgramBot\Classes\Advertiser\DeleteAdvert;
 use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditNumberOfChannel;
 use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditPackage;
 use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditPostingTime;
@@ -55,6 +55,7 @@ use App\TelgramBot\Classes\Earnings\TotalEarning;
 use App\TelgramBot\Common\Services\Advertiser\PromotionService;
 use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditLevelOfChannel;
 use App\TelgramBot\Classes\Advertiser\EditAdvert\Packages\EditNumberOfDays;
+use App\TelgramBot\Classes\ContactUs;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 
 /**
@@ -73,7 +74,7 @@ class IndexController extends Controller
         Chat::$bot = (new Api());
         Chat::$bot->addCommands([
             StartCommand::class,
-//            SkipCommand::class,
+            // SkipCommand::class,
         ]);
         GeneralService::assignChatValues();
     }
@@ -87,7 +88,7 @@ class IndexController extends Controller
     public function index(Command $command): void
     {
        if (isset(Chat::$isCommand)){
-           exit;
+           return ;
        }else{
            $this->processInput();
        }
@@ -102,7 +103,11 @@ class IndexController extends Controller
       if (Chat::$text_message === 'Advertiser'){
           Chat::deleteTemporaryData();
           (new Advertiser())->handle(true);
-      }elseif (Chat::$text_message === 'Channel Owner'){
+      }elseif(Chat::$text_message ==='Contact Us'){
+          Chat::deleteTemporaryData();
+          (new ContactUs())->sendMessage();
+      }
+      elseif (Chat::$text_message === 'Channel Owner'){
           Chat::deleteTemporaryData();
           (new ChannelOwner())->handle(true);
       }elseif(Chat::$text_message === 'Channel'){
@@ -167,7 +172,13 @@ class IndexController extends Controller
           (new MyPromotion())->handle(true);
       }elseif (GeneralService::checkAdvertPage()){
           (new MyPromotion())->handle(false);
-      }elseif (ViewAdvertService::checkCommandIsViewAdvertCommand(Chat::$text_message)){
+      }
+
+      elseif (EditAdvertService::checkCallBackQueryIsDeleteAdvert()){
+          (new DeleteAdvert(ViewAdvertService::getIDFromViewKeyboard()))->deleteAdvert();
+       }
+
+      elseif (ViewAdvertService::checkCommandIsViewAdvertCommand(Chat::$text_message)){
           (new ViewAdverts(ViewAdvertService::getAdvertIdFromView(Chat::$text_message)))->sendListOfOptions();
       }elseif (ViewAdvertService::checkTheKeyboardIsViewFullAdvertInformation()){
           (new DetailAdvertInfo(ViewAdvertService::getIDFromViewKeyboard()))->sendDetailInfo();
@@ -320,8 +331,7 @@ class IndexController extends Controller
            case 'Edit_Number_Of_Days':
             (new EditNumberOfDays(Cache::get('edit_advert_id'.Chat::$chat_id)));
               break;
-           default:
-            Chat::sendTextMessage('⚠️ unknown command or input ⚠️');   
+            
        }
 
     }

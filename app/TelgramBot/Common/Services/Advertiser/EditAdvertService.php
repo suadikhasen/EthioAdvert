@@ -21,6 +21,17 @@ class EditAdvertService
       return false;
   }
 
+  public static  function checkCallBackQueryIsDeleteAdvert()
+  {
+    if (GeneralService::isQuery())
+      {
+         if (GeneralService::checkStartString(GeneralService::getCallBackQueryData(),'delete_advert'))
+             return true;
+         return false;
+      }
+      return false; 
+  }
+
   public static function checkCallBackQueryIsEditPackage()
   {
 

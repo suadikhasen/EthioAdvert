@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Adverts;
 
 use App\Http\Controllers\Controller;
+use App\Services\Common\TelegramBot;
 use App\TelegramPost;
 use App\TelgramBot\Database\Admin\AdvertRepository;
 use App\TelgramBot\Database\Admin\TelegramPostRepository;
@@ -22,6 +23,7 @@ class AdvertsController extends Controller
     {
         $adverts = AdvertRepository::allAdverts();
         $number_of_advert = AdvertRepository::countAdverts();
+        
         return view('admin.adverts.list_of_adverts',
         [
          'adverts'  => $adverts,
@@ -33,8 +35,13 @@ class AdvertsController extends Controller
     public function detailAboutAdverts($advert_id)
     {
         $advert = AdvertRepository::findAdvert($advert_id);
+        $url=null;
+        if($advert->image_path != null){
+            $url = TelegramBot::getPhotoPath($advert);
+        }
         return view('admin.adverts.detail_about_adverts',[
              'advert'  => $advert,
+             'url'     => $url
              ]);
     }
 
@@ -48,6 +55,7 @@ class AdvertsController extends Controller
     public function approveAdvert($advert_id)
     {
       AdvertRepository::updateApproveStatus($advert_id,true);
+      TelegramBot::sendAdvertApprovementNotification($advert_id);
       return back()->with('success_notification','advert approved successfully');
     }
 

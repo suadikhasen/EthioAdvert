@@ -26,10 +26,12 @@ class  PackageRepository
     }
 
     public static function createPackage($request)
-    {
+    {  
+        $level = ChannelLevel::where('level_name',$request->package_level)->first();
+
         Package::create([
            'package_name' => $request->package_name,
-           'channel_level_id' => Str::after($request->package_level, ' '),
+           'channel_level_id' => $level->id,
            'initial_posting_time_in_one_day' => Carbon::parse($request->package_initial_posting_time),
            'final_postig_time_in_one_day' => Carbon::parse($request->package_final_posting_time),
            'price' => $request->package_price,

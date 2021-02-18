@@ -7,14 +7,17 @@ use App\EthioAdvertPost;
 use App\PaymentVerification;
 use App\Paid;
 use App\TelegramPost;
+use App\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 class  PaymentRepository
-{
+{  
+    public static $total;
     public static function findAdvertisersPaymentHistory($advertiser_id)
     {
         return PaymentVerification::with(['adverts','paymentMethod','user'])->where('advertiser_id',$advertiser_id)->simplePaginate(5);
@@ -52,16 +55,18 @@ class  PaymentRepository
 
     public static function listOfPendingPayments()
     {
-       $users = TelegramPost::with('user')->select('channel_owner_id')->whereDate('created_at','<',Carbon::now()->firstOfMonth())->groupBy('channel_owner_id')->get();
-       $payments = array();
+       $users = User::where('type','Channel Owner')->get();
+       $payments = collect();
+       $total = 0;
        foreach($users as $user)
        {
          if($user->pending_payment > 0){
-             $payments[$user->channel_owner_id] = $user;
+             $total+=$user->pending_payment;
+             $payments->push($user);
          }
        }
-       $payments = new Collection(array_filter($payments));
-       return self::paginate($payments,5);
+       self::$total=$total;
+       return self::paginate($payments,10);
     }
 
     public static function pendingPaymentOfuser($user_id)
@@ -81,7 +86,7 @@ class  PaymentRepository
         return $total_earning;
     }
 
-    public static function paginate($items, $perPage = 30) 
+    public static function paginate($items, $perPage = 10) 
     {
         //Get current page form url e.g. &page=1
         $currentPage = LengthAwarePaginator::resolveCurrentPage();

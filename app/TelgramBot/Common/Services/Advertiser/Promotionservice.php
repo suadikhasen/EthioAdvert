@@ -2,13 +2,10 @@
 
 namespace App\TelgramBot\Common\Services\Advertiser;
 
-use App\EthioAdvertPost;
-use App\Package;
 use App\TelgramBot\Common\GeneralService;
 use App\TelgramBot\Database\AdvertsPostRepository;
 use App\TelgramBot\Database\PackageRepositoryService;
 use App\TelgramBot\Object\Chat;
-use Telegram\Bot\Keyboard\Keyboard;
 use App\Temporary;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Carbon;
@@ -16,7 +13,6 @@ use Illuminate\Support\Carbon;
 class PromotionService
 {
   private static $advert;
-  private static $package;
 
   public static function checkInlineKeyboardIsTimeSelectionForPromotion()
   {
@@ -82,51 +78,55 @@ class PromotionService
     return false;
   }
 
-  public static function makeAdvet($advert,$package)
+  public static function makeAdvet($advert)
   {
     self::$advert = $advert;
-    self::$package = $package;
-    Cache::remember('text_detail_advert_info'.$advert->id,Carbon::now()->addMonths(2),function (){
-      return self::makeAdvetInformation(self::$advert,self::$package);
+    return Cache::remember('text_detail_advert_info'.$advert->id,Carbon::now()->addMonths(2),function (){
+       return self::makeAdvetInformation(self::$advert);
    });
   }
 
-  private static function makeAdvetInformation($advert,$package)
+  private static function makeAdvetInformation($advert)
   {
-    
-    
-    return '----- <b>Information Of Current Advert:</b> ------' . "\n" . "\n" .
-    '       --------  Content Info '.'--------'."\n" . "\n" .
-        '<strong> Name Of The Advert:</strong>' . "\n" .
-        $advert->name_of_the_advert . "\n" . "\n" .
-        '<strong>Description Of The Advert:</strong>' . "\n" . "\n" .
-        $advert->description_of_advert . "\n" . "\n" .
-        '<strong>Main Message :</strong>' . "\n" . "\n" .
-        $advert->text_message . "\n" . "\n" .
-        '<strong>Photo Of The Advert :</strong>' . "\n" . "\n" .
-        self::photoInfo() . "\n" . "\n" .
-        '<strong>Initial Date In Ethiopian Calandar :</strong>' . "\n" . "\n" .
-        $advert->initial_date . "\n" ."\n".
-        '       -------- Package Information '.'--------'."\n" . "\n" .
-        '<strong>Level Of Channel :</strong>' . "\n" . "\n" .
-        $package->level->level_name ."\n" . "\n".
-        '<strong> Number Of Days :</strong>' . "\n" . "\n" .
-        $package->number_of_days. "\n" . "\n" .
-        '<strong>Posting Time Ethiopian Calendar:</strong>' . "\n" . "\n" .
-        'from '.$package->initial_posting_time_in_one_day.' to '.$package->final_posting_time_in_one_day.
-        '<strong>Total Price :</strong>' . "\n" . "\n" .
-        $advert->amount_of_payment."\n"."\n".
-        '       -------- Status Information '.'--------'."\n" . "\n" .
-        '<strong>Approve Status :</strong>'.self::approveStatus(). "\n" . "\n" .
-        '<strong>Payment Status :</strong>'.self::paymentStatus() . "\n" . "\n" .
-        '<strong>Active Status :</strong> '.self::activeStatus() . "\n" . "\n" ;
+    return '⟹ <b> Advert Information </b> '."\n\n" .
+        '<b>------------Advert Content------------ </b>'."\n\n".
+        '⇒ <strong> Name :</strong>'."\n\n" .
+        $advert->name_of_the_advert . "\n\n" .
+        '⇒ <strong> Description :</strong>' ."\n\n".
+        $advert->description_of_advert."\n\n".
+        '⇒ <strong> Main Message :</strong>'."\n\n".
+        $advert->text_message ."\n\n".
+        '⇒ <strong> Photo :</strong>'."\n\n".
+        self::photoInfo()."\n\n".
+        '<b>------------Date and Time------------ </b>'."\n\n".
+        '⇒ <strong> Initial Date :</strong>'."\n\n".
+        $advert->gc_calendar_initial_date ."\n\n".
+        '⇒ <strong> Final Date :</strong>'."\n\n".
+        $advert->gc_calendar_final_date ."\n\n".
+        '⇒ <strong> Posting Time  :</strong>'."\n\n".
+        'from '.$advert->initial_time .' to '.$advert->final_time."\n\n".
+        '<b>------------Package And Price------------</b>'."\n\n".
+        '⇒ <strong>Package Name :</strong>'."\n\n".
+         $advert->package_name."\n\n".
+        '⇒ <strong> Number Of Days :</strong>'."\n\n".
+        $advert->number_of_days."\n\n" .
+        '⇒ <strong> Package Price :</strong>'."\n\n".
+        $advert->one_package_price."\n\n".
+        '⇒ <strong> Number Of Channel :</strong>'."\n\n".
+        $advert->number_of_channel."\n\n".
+        '⇒ <strong>Total Price :</strong>'."\n\n". 
+        $advert->amount_of_payment."\n\n".
+        '<b>------------Status------------</b>'."\n\n".
+        '⇒ <strong>Approve Status : </strong>'.self::approveStatus()."\n\n".
+        '⇒ <strong>Payment Status : </strong>'.self::paymentStatus()."\n\n".
+        '⇒ <strong>Active Status : </strong> '.self::activeStatus()."\n\n";
   }
 
   private static function photoInfo()
   {
      if(self::$advert->image_path === null)
      {
-       return 'Advert Has No Image';
+       return 'Advert Has No Image.';
      }else{
        return 'Photo Attached On The Above';
      }
@@ -137,9 +137,7 @@ class PromotionService
       if(self::$advert->approve_status)
       {
         return 'Approved';
-
       }
-
       return 'not approved';
      
   }
@@ -151,7 +149,6 @@ class PromotionService
       return 'Paid';
 
     }
-
     return 'not Paid';
   }
 
@@ -159,14 +156,15 @@ class PromotionService
   {
     if(self::$advert->active_status === 1)
     {
-      return 'Not Posted';
+      return 'Pending';
 
     }elseif(self::$advert->active_status === 2){
-       return 'Active Now';
+       return 'Waiting For Posting';
     }elseif(self::$advert->active_status === 3){
-       return 'Posted';
+       return 'active';
+    }elseif(self::$advert->active_status === 4){
+      return 'Finished';
     }
-
     return 'Expired';
   }
 }

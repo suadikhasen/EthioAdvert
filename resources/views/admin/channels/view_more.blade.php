@@ -33,8 +33,11 @@
               <p>
                 approve status : {{ approve_status($channel->approve_status)}}
               </p>
-                  <a href="{{route('admin.channels.approve_channel',[$channel->channel_owner_id,$channel->channel_id])}}" class="btn btn-success">  approve </a>
+                 @if($channel->approve_status)
                   <a href="{{route('admin.channels.dis_approve_channel',[$channel->channel_owner_id,$channel->channel_id])}}" class="btn btn-success"> dis approve </a>
+                 @else
+                  <a href="{{route('admin.channels.approve_channel',[$channel->channel_owner_id,$channel->channel_id])}}" class="btn btn-success">  approve </a>
+                  @endif
               <p>removed status : {{ channel_removed_status($channel->remove_status )}}</p>
               @if(!$channel->removed_status)
                   <a href="#" class="btn btn-success">  Remove </a>
@@ -50,9 +53,9 @@
                <a href="{{ route('admin.channels.block_channel',$channel->channel_id)}}" class="btn btn-danger">  Block </a>
                @endif 
                <a href="{{route('admin.channels.view_channels_advert',$channel->channel_id)}}" class="btn btn-primary">  View Adverts </a>
-                 <a href="{{ route('admin.channels.update_information',$channel->channel_id) }}" class="btn btn-dark btn-medium"> Update Information </a>
+                 <a href="#" class="btn btn-dark btn-medium"> Update Information </a>
                  <a href="{{ route('admin.channels.add_quality',$channel->channel_id)}}" class="btn btn-primary ">add  quality</a>
-                 <a href="#" class="btn btn-primary"> Assign  Level </a>
+                 <a href="{{route('admin.channels.assign_level',$channel->channel_id)}}" class="btn btn-primary"> Assign  Level </a>
                </div>
               </div>
             </div>

@@ -50,7 +50,10 @@ class PaginationkeyBokard{
     private $next_page_url;
 
     public function __construct($instance_of_keyboard=null,$text_of_next_keyboard,$text_of_previous_keyboard,$call_back_of_next_keyboard,$call_back_of_previous_keyboard,$next_page_url,$previous_page_url)
-    {
+    {   
+        if($instance_of_keyboard==null){
+          $instance_of_keyboard = Keyboard::make()->inline();
+        }
         $this->instance_of_keyboard           =    $instance_of_keyboard;
         $this->text_of_next_keyboard          =    $text_of_next_keyboard;
         $this->text_of_previous_keyboard      =    $text_of_previous_keyboard;
@@ -64,9 +67,9 @@ class PaginationkeyBokard{
     {
         if($this->previous_page_url === null && $this->next_page_url !== null){
              $this->nextkeyboard();      
-         }elseif($this->next_page_url === null && self::$previous_page_url !== null){
+         }elseif($this->next_page_url === null && $this->previous_page_url !== null){
             $this->previouskeyboard();
-         }elseif(self::$previous_page_url !== null && $this->next_page_url !== null){
+         }elseif($this->previous_page_url !== null && $this->next_page_url !== null){
             $this->bothKeyBoard();
          }
          return $this->instance_of_keyboard;

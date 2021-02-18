@@ -38,13 +38,13 @@ class ChannelOwner
         {
             switch ($response->question){
                 case 'full_name':
-                    Chat::createAnswer($response->id);
                     Chat::sendInlineKeyBoardForPhone('Send Your Phone Number');
+                    Chat::createAnswer($response->id);
                     Chat::createQuestion('Channel Owner','phone_number');
                     break;
                 case 'phone_number':
-                    Chat::createAnswer($response->id);
                     Chat::Register('Channel Owner');
+                    Chat::createAnswer($response->id);
 
             }
         }else{

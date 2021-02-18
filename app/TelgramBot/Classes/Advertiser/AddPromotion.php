@@ -3,7 +3,6 @@
 
 namespace App\TelgramBot\Classes\Advertiser;
 
-
 use App\EthioAdvertPost;
 use App\TelgramBot\Common\GeneralService;
 use App\TelgramBot\Common\Pages;
@@ -13,19 +12,15 @@ use App\TelgramBot\Database\BankRepository;
 use App\TelgramBot\Database\TemporaryRepository;
 use App\TelgramBot\Object\Chat;
 use App\Temporary;
-use Carbon\Carbon;
-use Andegna\DateTime;
-use App\Package;
-use App\TelgramBot\Classes\Advertiser\AddPromotionClass\LevelOfChannel;
+use Illuminate\Support\Carbon;
 use App\TelgramBot\Classes\Advertiser\AddPromotionClass\NumberOfDays;
-use App\TelgramBot\Classes\Advertiser\AddPromotionClass\TimeOfTheAdvertPerDay;
-use App\TelgramBot\Common\Services\Advertiser\PromotionService;
-use App\TelgramBot\Common\Services\Advertiser\ViewAdvertService;
 use Illuminate\Support\Str;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Keyboard\Keyboard;
-use App\TelgramBot\Database\PackageRepositoryService;
-use Telgrambot\classes\Advertiser\AddPromotionClass\HowManyChannel;
+use App\TelgramBot\Classes\Advertiser\AddPromotionClass\Package as PromotionPackage;
+use App\TelgramBot\Database\BotPackageRepository;
+use Illuminate\Support\Facades\Cache;
+use App\TelgramBot\Classes\Advertiser\AddPromotionClass\HowManyChannel;
 
 /**
  * Class AddPromotion
@@ -89,7 +84,8 @@ class AddPromotion
         else {
             Chat::deleteTemporaryData();
             Chat::createQuestion('Add_Promotion', 'name_of_the_advert');
-            Chat::sendTextMessage('please send name of the promotion not greater than 20 characters (mostly organization name)');
+            Chat::sendTextMessage('⬇️ <b> please send name of the promotion . </b>'.
+            "\n".'not greater than 20 characters (mostly organization name)');
         }
     }
 
@@ -100,7 +96,7 @@ class AddPromotion
     private function processQuestion($response)
     {
         $this->response = $response;
-        if ($response->answer === null || $response->question === 'no_view') {
+        if ($response->answer === null) {
             switch ($response->question) {
                 case 'name_of_the_advert':
                     $this->acceptNameOfTheAdvert();
@@ -114,34 +110,42 @@ class AddPromotion
                 case 'image_path':
                     $this->acceptImage();
                     break;
-                case 'initial_date':
-                    $this->acceptInitialDate();
-                    break;
-                case 'final_date':
-                    $this->acceptFinalDate();
-                    break;
-                case 'no_view':
-                    $this->acceptNumberOfView();
-                    break;
-                case 'payment_code':
-                    $this->acceptPaymentMethod();
-                    break;
                 case 'how_many_days_is_live':
                     (new NumberOfDays())->acceptNumberOfDay($this->response);
                 break;    
-
-                case 'time_duration_per_day':
-                    (new TimeOfTheAdvertPerDay())->acceptTimeOfTheAdvertPerDay($this->response);
-                break;
-                case 'level_of_channel':
-                    (new LevelOfChannel())->selectLevel($this->response);
-                break;
+                case 'select_package':
+                    $this->acceptPackage();
+                    break;
                 case 'how_many_channels':
                     (new HowManyChannel())->acceptNumberOfChannel($this->response);
+                break;    
+                case 'initial_date':
+                    $this->acceptInitialDate(); 
                 break;
+                
             }
         } else {
             
+        }
+    }
+
+    private function acceptPackage()
+    {
+        $check_query = GeneralService::checkCallBackQuery();
+        if($check_query){
+            $query_data = GeneralService::getCallBackQueryData();
+            if(GeneralService::checkStartString($query_data,'list_of_packages')){
+                $reduced_data   = GeneralService::findAfterString($query_data,'/');
+                $number_of_days = Str::before($reduced_data, '_');
+                $page_number    = Str::after($reduced_data, '_');
+                (new PromotionPackage())->handle(true,$number_of_days,1,$page_number);
+            }elseif(GeneralService::checkStartString($query_data,'select_package')){
+               Chat::$text_message = GeneralService::findAfterString($query_data,'/');
+
+               $this->sendInitialDateMessage();               
+            }
+        }else{
+            Chat::sendTextMessage('please use the button');
         }
     }
 
@@ -155,7 +159,7 @@ class AddPromotion
         } else {
             Chat::createAnswer($this->response->id);
             Chat::createQuestion('Add_Promotion', 'description_of_advert');
-            Chat::sendTextMessage('Please Send A Small Description Of Promotion');
+            Chat::sendTextMessage('⬇️ <b> Please Send A Small Description Of Promotion </b>'."\n".'not greater than 20 characters (like food delivery,ride service)');
         }
     }
 
@@ -169,7 +173,7 @@ class AddPromotion
         } else {
             Chat::createAnswer($this->response->id);
             Chat::createQuestion('Add_Promotion', 'text_message');
-            Chat::sendTextMessage('Please Send Main Message Of Promotion (only send text ,if you have image it will be next))');
+            Chat::sendTextMessage('⬇️<b> Please Send Main Message Of Promotion.</b>'."\n".' (only send text ,if you have image it will be next))');
         }
     }
 
@@ -191,10 +195,11 @@ class AddPromotion
      *accept image of promotion
      */
     private function acceptImage(): void
-    {
-        Chat::createAnswer($this->response->id);
-        Chat::createQuestion('Add_Promotion', 'initial_date');
-        $this->sendInitialDateMessage();
+    {  
+        if(Chat::$text_message == '/skip'){
+            Chat::$text_message = 'no';
+        }
+        (new NumberOfDays())->sendHowmanyDaysMessage($this->response);
     }
 
 
@@ -203,40 +208,65 @@ class AddPromotion
      */
     private function acceptInitialDate(): void
     {
-        if ($this->validateUserInputDate()) {
-            $initial_date   =  Carbon::create(GeneralService::getEthiopianCurrentyear(), $this->month, $this->day);
-            if ($this->validateInitialDate()) {
-                Chat::$text_message = $initial_date;
-                Chat::createAnswer($this->response->id);
-                (new NumberOfDays())->sendHowmanyDaysMessage();
-            } else {
-                $this->sendDateError();
-            }
-        } else {
-            Chat::sendTextMessage('please send correct date format as shown before');
+        if(GeneralService::validateInitialDate(Chat::$text_message)){
+        //    Chat::createAnswer($this->response->id);
+           $this->finishDateProcess();
         }
     }
 
-    private function validateInitialDate()
+    private function finishDateProcess()
     {
-        $tomorrow = (new DateTime(Carbon::tomorrow()))->getDay();
-        if($this->day === $tomorrow){
-            if(GeneralService::getEthiopianCurrentHour() < 14){
-                return true;
-            }
-        }elseif($this->day < $tomorrow){
-            return false;
-        }
-       
-        return true;
-        
+       $number_of_days   =TemporaryRepository::getSingleTemporaryData(Chat::$chat_id,'Add_Promotion','how_many_days_is_live')->answer;
+    //    $initial_date     = TemporaryRepository::getSingleTemporaryData(Chat::$chat_id,'Add_Promotion','initial_date');
+       $package_id                    = TemporaryRepository::getSingleTemporaryData(Chat::$chat_id,'Add_Promotion','select_package')->answer;
+       $package                       = BotPackageRepository::findPackage($package_id)->first();
+       $package_level_id              = $package->channel_level_id;
+
+       $initial_date                  = Carbon::create(Carbon::now()->year,GeneralService::findMonthFromComingDate(Chat::$text_message),GeneralService::findDayFromComingDate(Chat::$text_message));
+       $final_date                    = $initial_date->copy()->addDays($number_of_days-1);
+       $collection_of_packages_id     =   BotPackageRepository::findPackageByLevelIdForPackageId($package_level_id);
+       $taken_channels                =   BotPackageRepository::listOfTakenChannels($collection_of_packages_id,$initial_date);
+       $splited_channel_id            =   $this->splitChannelId($taken_channels);
+    //    Chat::sendTextMessage($taken_channels->count());
+       $available_channels            =   $this->firstOptionAvailableChannels($splited_channel_id);
+       if($available_channels->count() >= 1){
+         Chat::$text_message = $initial_date;
+         Cache::put('final_date'.Chat::$chat_id,$final_date);  
+         Cache::put('available_channels'.Chat::$chat_id, $available_channels,now()->addMinutes(5));
+         (new HowManyChannel())->sendHowManyChannelMessage($this->response,$available_channels->count());
+      }else{
+          Chat::sendTextMessage(' <b> the date you have selected is taken please try another date </b>'."\n".' skip 5 or 10 days and try');
+      }
     }
+
+    private  function firstOptionAvailableChannels($taken_channel_id)
+    {
+       return BotPackageRepository::finAvailableChannels($taken_channel_id);
+    } 
+
+    private function splitChannelId($taken_channels)
+    {  
+      $collection = array();  
+      foreach($taken_channels as $channel){
+            foreach($channel->assigned_channels as $value){
+            array_push($collection,$value); 
+          }
+      }
+      return $collection;
+    }
+
 
     private function sendInitialDateMessage(): void
     {
         $text = 'Please Send The Initial Date On Which The advert is Posted like' . "\n" .
-            '<strong>DD/MM' . "\n\n\n" . 'the date must be in Ethiopian Calendar</strong>';
-        Chat::sendTextMessage($text);
+              '<b> DD/MM' . "\n\n\n".'</b>'.
+              '<b> example, if you want your initial date to be january 21 your input will be 21/01. </b>'."\n".
+             '<strong> ❗️the date must be in European Calandar </strong>';
+        Chat::sendEditTextMessage($text,null,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
+        GeneralService::answerCallBackQuery('please send initial date !');
+        Chat::createAnswer($this->response->id);
+        Chat::createQuestion('Add_Promotion','initial_date');     
+
     }
 
     /**
@@ -244,8 +274,8 @@ class AddPromotion
      */
     private function acceptFinalDate(): void
     {
-        if ($this->validateUserInputDate()) {
-            $final_date   =  Carbon::create(GeneralService::getEthiopianCurrentyear(), $this->month, $this->day);
+        if (GeneralService::validateDate(Chat::$text_message)) {
+        $final_date=Carbon::create(Carbon::now()->year, GeneralService::findMonthFromComingDate(Chat::$text_message),GeneralService::findDayFromComingDate(Chat::$text_message));
             $initial_date =  Carbon::parse($this->getInitialDate()->answer);
             if($this->validateFinalDate($initial_date,$final_date)){
                 Chat::$text_message = $final_date;
@@ -306,10 +336,12 @@ class AddPromotion
      */
     private function sendFinalDateMessage(): void
     {
-        $text = 'Please Send The final Date On Which The advert is Posted like' . "\n" .
-            '<strong>DD/MM' . "\n\n\n" . 'the date must be in Gregorian Calendar</strong>';
+        $text = 'Please Send The Final Date On Which The advert is Posted like' . "\n" .
+              '<b> DD/MM </b>'. "\n\n\n".
+              '<b> example if you want your initial date to be january 21 your input will be 01/21 </b>'."\n".
+             'the date must be in European Calandar ';
+        Chat::createQuestion('Add_Promotion','final_date');     
         Chat::sendTextMessage($text);
-        Chat::createQuestion('Add_Promotion', 'final_date');
     }
 
     /**

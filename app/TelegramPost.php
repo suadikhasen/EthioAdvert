@@ -4,6 +4,7 @@ namespace App;
 
 use App\TelgramBot\Database\Admin\PaymentRepository;
 use Illuminate\Database\Eloquent\Model;
+use App\Channels as Channel;
 
 class TelegramPost extends Model
 {
@@ -16,12 +17,16 @@ class TelegramPost extends Model
      */
     protected $guarded = [];
 
+
+    public $appends = ['pending_payment'];
+
+
     /**
      *
      */
     public function channelsName()
     {
-        return $this->hasOne(Channels::class,'channel_id','channel_id');
+        return $this->hasOne(Channel::class,'channel_id','channel_id');
     }
 
     public  function adverts()
@@ -34,7 +39,6 @@ class TelegramPost extends Model
         return $this->hasOne(User::class,'chat_id','channel_owner_id');
     }
 
-    public $appends = ['pending_payment'];
 
     public function getPendingPaymentAttribute()
     {

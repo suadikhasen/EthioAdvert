@@ -57,13 +57,14 @@ class Advertiser
         {
             switch ($response->question){
                 case 'full_name':
-                    Chat::createAnswer($response->id);
                     Chat::sendInlineKeyBoardForPhone('send Your  Phone Number');
+                    Chat::createAnswer($response->id);
                     Chat::createQuestion('Advertiser','phone_number');
                     break;
                 case 'phone_number':
-                    Chat::createAnswer($response->id);
                     Chat::Register('Advertiser');
+                    Chat::createAnswer($response->id);
+
             }
         }
 

@@ -5,46 +5,26 @@ namespace App\TelgramBot\Classes\Advertiser;
 
 
 use App\TelgramBot\Common\GeneralService;
+use App\TelgramBot\Common\Services\Advertiser\EditAdvertService;
+use App\TelgramBot\Common\Services\CacheService;
+use App\TelgramBot\Database\AdvertsPostRepository;
 use App\TelgramBot\Object\Chat;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class DeleteAdvert extends ViewAdverts
 {
-  public function beforeDeleteAdvert()
+  public function deleteAdvert()
   {
       if ($this->advert->payment_status){
-          return 'advert can not be deleted and you can add adverts using add promotion buttons';
+          GeneralService::answerCallBackQuery('paid advert can not be deleted if you want to order another you can add new',true);
       }else{
-         $this->makeTextMessage();
-         $this->makeKeyboard();
-         Chat::sendEditTextMessage($this->advert_text_message,$this->advert_keyboards,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
+         AdvertsPostRepository::deleteAdvert($this->advert->id); 
+         EditAdvertService::removeCacheAdvert($this->advert->id);
+         Chat::sendEditTextMessage('advert deleted successfully',$this->advert_keyboards,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
       }
   }
 
-  public function makeTextMessage()
-  {
-     $this->advert_text_message = $this->textMessage();
-  }
+  
 
-  public function textMessage()
-  {
-      return 'Are You Sure you want to remove this advert';
-  }
-
-  public function makeKeyboard()
-  {
-      $this->advert_keyboards = $this->deleteAdvertKeyboard();
-  }
-
-    private function deleteAdvertKeyboard()
-    {
-        return Keyboard::make()->inline()->row(Keyboard::make([
-            'text'            => 'Confirm',
-            'callback_data'   => 'accept_delete_advert'.$this->advert->id
-        ]),
-         Keyboard::make([
-                'text'            => 'Cancel',
-                'callback_data'   => 'cancel_delete_advert'.$this->advert->id
-            ]));
-    }
+    
 }

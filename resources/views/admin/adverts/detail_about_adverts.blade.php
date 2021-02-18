@@ -19,7 +19,7 @@
              <a href="{{ route('admin.adverts.approve_advert',$advert->id) }}" class="btn btn-primary mr-2 mt-2 mb-2"  > Approve Advert</a>
             @endif
             @if ($advert->active_status == 2 || $advert->active_status == 3)
-                 <a href="{{ route('admin.adverts.post_the_advert',$advert->id)}}" class="btn btn-success mr-2 mt-2 mb-2"> Post Advert</a>
+                 <a href="{{ route('admin.adverts.post_the_advert',$advert->id)}}" class="btn btn-success mr-2 mt-2 mb-2"> Post Advert </a>
             @endif
             <a href="{{ route('admin.adverts.view_post_history',$advert->id)}}" class="btn btn-info mr-2 mt-2 mb-2">  View Post History</a>
 
@@ -34,6 +34,11 @@
                     <div class="card-title">
                         <b class="bg-primary">  Advert Content </b>
                         <div class="list-group-item text-bold align-content-center">
+                            <div class="card-image">
+                               @if($advert->image_path)
+                                 <img alt="advert image" src="{{$url}}">
+                               @endif
+                            </div>
                             <div >
                                <b class="text-success mb-2">Name Of The Advert :</b>
                                <p>
@@ -84,35 +89,12 @@
                             {{ $advert->number_of_channel }}
                         </p>
                      </div>
-
-                     <div class="mt-2">
-                        <b class="text-success mb-3">Number Of Channels Of The Advert :</b>
-                        <p>
-                            {{ $advert->number_of_channel }}
-                        </p>
-                     </div>
-
-                     <div class="mt-2">
-                        <b class="text-success mb-3">Initial  Posting Time Of The Advert :</b>
-                        <p>
-                            {{ $advert->initial_time }}
-                        </p>
-                     </div>
-
                      <div class="mt-2">
                         <b class="text-success mb-3">One Package Price  Of The Advert :</b>
                         <p>
                             {{ $advert->one_package_price }}
                         </p>
                      </div>
-
-                     <div class="mt-2">
-                        <b class="text-success mb-3">One Package Price  Of The Advert :</b>
-                        <p>
-                            {{ $advert->one_package_price }}
-                        </p>
-                     </div>
-
                      <div class="card-body">
                             <b class="bg-primary">  Status Of The Advert </b><br>
                          <div class="list-group-item text-bold align-content-center">
@@ -141,33 +123,32 @@
                     </div>
 
                     <div class="card-body">
-                        <b class="bg-primary">  Date Information Of The Advert </b><br>
+                        <b class="bg-primary">  Date And Time </b><br>
                      <div class="list-group-item text-bold align-content-center">
-                        <div class="mt-2">
-                            <b class="text-success mb-3">Initial Date (Ethiopian Calalndar):</b>
-                            <p>
-                                {{ ($advert->et_calendar_initial_date) }}
-                            </p>
-                         </div>
-
                          <div class="mt-2">
-                            <b class="text-success mb-3">Final Date (Ethiopian Calalndar):</b>
-                            <p>
-                                {{ ($advert->et_calendar_final_date) }}
-                            </p>
-                         </div>
-                         
-                         <div class="mt-2">
-                            <b class="text-success mb-3"> Initial Date (GC Calalndar):</b>
+                            <b class="text-success mb-3"> Initial Date </b>
                             <p>
                                 {{ ($advert->gc_calendar_initial_date) }}
                             </p>
                          </div>
 
                          <div class="mt-2">
-                            <b class="text-success mb-3"> Final Date (GC Calalndar):</b>
+                            <b class="text-success mb-3"> Final Date</b>
                             <p>
                                 {{ ($advert->gc_calendar_final_date) }}
+                            </p>
+                         </div>
+
+                         <div class="mt-2">
+                            <b class="text-success mb-3"> Initial Time </b>
+                            <p>
+                                {{ ($advert->initial_time) }}
+                            </p>
+                         </div>
+                         <div class="mt-2">
+                            <b class="text-success mb-3"> Final Time </b>
+                            <p>
+                                {{ ($advert->final_time) }}
                             </p>
                          </div>
                      </div>                         

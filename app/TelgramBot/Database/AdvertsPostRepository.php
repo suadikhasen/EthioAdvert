@@ -5,7 +5,10 @@ namespace App\TelgramBot\Database;
 
 
 use App\EthioAdvertPost;
+use App\TelgramBot\Object\Chat;
 use Carbon\Carbon;
+use danog\MadelineProto\stats;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -45,8 +48,10 @@ class AdvertsPostRepository
      * @return mixed
      */
     public static function checkExistenceOfNonExpiredUserAdvert($advertiser_id)
-   {
-       return EthioAdvertPost::where('advertiser_id',$advertiser_id)->where('payment_status',false)->whereDate('final_date','>',Carbon::today())->exists();
+   {  
+      $now        = Carbon::now();  
+      $before_two_hour = $now->copy()->subHours(2);
+       return EthioAdvertPost::where('advertiser_id',$advertiser_id)->where('payment_status',false)->whereBetween('created_at',[$before_two_hour,$now])->exists();
    }
 
    public static function pendingPromotion($advertiser_id)
@@ -62,7 +67,12 @@ class AdvertsPostRepository
    public static function findAdvert($advert_id)
    {
        return Cache::remember('advert'.$advert_id,now()->addDays(2),function () use ($advert_id) {
-           return EthioAdvertPost::with('package.level')->findOrFail($advert_id);
+           try{
+            return EthioAdvertPost::findOrFail($advert_id);
+           }catch(Exception $e){
+             Chat::sendTextMessage('server error');
+             return null;
+           }
        });
    }
 
@@ -70,5 +80,34 @@ class AdvertsPostRepository
    {
     return EthioAdvertPost::where('advertiser_id',$advertiser_id)->where('payment_status',false)->where('approve_status',true)->exists();
      
+   }
+
+   public static function deleteAdvert($advert_id)
+   {
+      self::findAdvert($advert_id)->delete();
+   }
+
+   public static function checkExistenceOfAdvert($advertiser_id)
+   {
+     return EthioAdvertPost::where('advertiser_id',$advertiser_id)->exists();   
+   }
+
+   public static function findAdvertsForPosting()
+   {
+       return EthioAdvertPost::where('approve_status',true)
+       ->where('payment_status',true)
+       ->whereDate('gc_calendar_initial_date','<=',now()->today())
+       ->whereDate('gc_calendar_final_date','>=',now()->today())
+       ->get();
+   }
+
+   public static function findActiveAdverts()
+   {
+       return EthioAdvertPost::where('active_status',3)->paginate(10);
+   }
+
+   public static function pendingAdverts()
+   {
+       return EthioAdvertPost::where('active_status',1)->orderBy('gc_calendar_initial_date','ASC')->paginate(10);
    }
 }

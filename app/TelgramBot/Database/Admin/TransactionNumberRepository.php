@@ -15,8 +15,9 @@ class TransactionNumberRepository
     {
        TransactionNumbers::create([
 
-          'ref_number'  => $transaction->transaction_number,
-          'payment_method_code' => $transaction->payment_method
+          'ref_number'          => $transaction->transaction_number,
+          'payment_method_code' => $transaction->payment_method,
+          'amount'              => $transaction->amount,
        ]);
     }
 

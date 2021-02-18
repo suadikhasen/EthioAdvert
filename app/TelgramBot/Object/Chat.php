@@ -5,6 +5,7 @@ namespace App\TelgramBot\Object;
 use App\TelgramBot\Common\Pages;
 use App\Temporary;
 use App\User;
+use danog\MadelineProto\stats;
 use Telegram\Bot\Api;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -299,6 +300,14 @@ class Chat
        'caption'    => $caption,
        'reply_markup'  => $keyboard
      ]);
+    }
+
+    public static function deleteMessage($chat_id,$message_id)
+    {
+        self::$bot->deleteMessage([
+            'chat_id'    =>  $chat_id,
+            'message_id' =>  $message_id,
+        ]);
     }
 
     

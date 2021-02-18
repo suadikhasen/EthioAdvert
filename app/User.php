@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\TelgramBot\Database\PaidRepository;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -38,6 +39,11 @@ class User extends Authenticatable
     public function payment_method()
     {
         return $this->hasOne(UserPaymentMethod::class,'chat_id','chat_id');
+    }
+
+    public function getPendingPaymentAttribute()
+    {
+        return PaidRepository::totalPendingPaymentOfUser($this->chat_id);
     }
 
 

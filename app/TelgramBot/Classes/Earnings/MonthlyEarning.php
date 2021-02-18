@@ -30,14 +30,21 @@ class MonthlyEarning
      */
     private function monthlyEarningOfUser(): void
     {
-        $total_earning = EarningRepository::monthlyEarningOfUserByChannel();
-        $text = '<strong>Monthly Earning Information:</strong>'."\n";
-        $total = 0.0;
-        foreach ($total_earning as $channel_earning){
-            $total += $channel_earning->total_channel_earning;
-            $text .='<strong>'.$channel_earning->channelsName->name.':</strong>'.$channel_earning->total_channel_earning."\n";
-        }
-        $text .= '<strong>Total:</strong>'.$total."\n";
+        $text=$this->makeMonthlyEarningMessage();
         Chat::sendTextMessage($text);
+    }
+
+    private function makeMonthlyEarningMessage()
+    {
+        $channels = ChannelRepository::allChannelsOfAuser(Chat::$chat_id);
+        $text = '<b> <i> Monthly Earning Information: </i> </b>'."\n"."\n";
+        $total=0.0;
+        foreach($channels as $channel){
+            $earning=EarningRepository::singleChannelMonthlyEarning($channel->channel_id);
+            $text.='<strong> On Channel '.$channel->name.'</strong>'.': '.$earning." ETB \n"."\n"; 
+            $total+= $earning;
+        }
+        $text .= '<strong>Total:</strong>' .$total." ETB". "\n";
+        return $text;
     }
 }

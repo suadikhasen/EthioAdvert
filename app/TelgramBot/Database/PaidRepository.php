@@ -39,7 +39,7 @@ class PaidRepository
      */
     public static function totalPendingPaymentOfUser($chat_id)
    {
-      return (EarningRepository::totalEarningOfUser() - EarningRepository::monthlyEarningOfUser() - self::totalPaidofUser($chat_id));
+      return (EarningRepository::totalEarningOfUser($chat_id) - EarningRepository::monthlyEarningOfUser($chat_id) - self::totalPaidofUser($chat_id));
    }
 
    public static function totalPaidofUser($chat_id)

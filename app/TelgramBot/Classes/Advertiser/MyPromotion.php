@@ -8,7 +8,6 @@ use App\TelgramBot\Common\GeneralService;
 use App\TelgramBot\Database\AdvertsPostRepository;
 use App\TelgramBot\Object\Chat;
 use Telegram\Bot\Exceptions\TelegramSDKException;
-use Telegram\Bot\Keyboard\Keyboard;
 
 /**
  * Class MyPromotion
@@ -32,7 +31,7 @@ class MyPromotion
     /**
      * @var string
      */
-    protected $text='<strong>---Your Advert Information -----</strong>'."\n".'----- <i>click view more to see more about the advert</i>  ---'."\n";
+    protected $text='⟹ <b>List Of Your Advert </b>'."\n\n";
     /**
      * @var false|resource
      */
@@ -44,8 +43,9 @@ class MyPromotion
      * @throws TelegramSDKException
      */
     public  function handle(bool $isCommand=false): void
-    {
-      if ($isCommand)
+    { 
+       
+      if($isCommand)
           $this->sendListOfPromotions(false);
       else{
          $this->page_number = GeneralService::getPageNumberFromAdvertQuery();
@@ -58,7 +58,11 @@ class MyPromotion
      * @throws TelegramSDKException
      */
     private function sendListOfPromotions(bool $query)
-    {
+    {   
+        if(!AdvertsPostRepository::checkExistenceOfAdvert(Chat::$chat_id)){
+            Chat::sendTextMessage('❗️<b>no promotion.</>');
+            exit;
+        } 
         $this->fetchData($this->page_number);
         $this->makeTextForListOfPromotions($this->list);
         $this->makeKeyBoardForListOfPromotions($this->list);
@@ -73,7 +77,7 @@ class MyPromotion
     {
         if ($query){
             Chat::sendEditTextMessage($this->text,$this->keyboard,GeneralService::getChatIdFromCallBack(),GeneralService::getMessageIDFromCallBack());
-            GeneralService::answerCallBackQuery('Page Displayed');
+            GeneralService::answerCallBackQuery('Advert Page Displayed');
         }else{
             Chat::sendTextMessageWithInlineKeyboard($this->text,$this->keyboard);
         }
@@ -85,7 +89,7 @@ class MyPromotion
      */
     public function fetchData($page_number)
     {
-       $this->list = AdvertsPostRepository::promotionsOfUser(Chat::$chat_id,$page_number,GeneralService::default_number_of_view_advert_page);
+       $this->list = AdvertsPostRepository::promotionsOfUser(Chat::$chat_id,$page_number,1);
        $this->list = json_decode($this->list,false);
     }
 
@@ -97,9 +101,13 @@ class MyPromotion
 //      $list = json_decode($list,false);
       $no = $this->advertNumbers();
         foreach ($list->data as $advert){
-            $this->text = $this->text.'<strong>'.$no.', '.$advert->name_of_the_advert.'</strong>'."\n".
-                '<strong>price:</strong>'.$advert->amount_of_payment."\n".
-                '/view_more_'.$advert->id."\n\n";
+            $this->text = $this->text.
+                        '⇒ <strong> #'.$no.'</strong>'."\n\n".
+                        '⇒ <strong> Id : </strong>'.$advert->id."\n\n".
+                        '⇒ <strong> Name : </strong>'.$advert->name_of_the_advert."\n\n".
+                        '⇒ <strong> price: </strong>'.$advert->amount_of_payment."\n\n".
+                        '⇒ /view_more_'.$advert->id."\n\n".
+                        '⬆️ <b><i>click the above view more command to see more about the advert.</i></b>';
               $no++;
         }
 
@@ -110,12 +118,19 @@ class MyPromotion
      */
     private function makeKeyBoardForListOfPromotions($list)
     {
-       $this->keyboard  =  (new PaginationkeyBokard(null,'Next',
-       'Previous',
-       'Page/'.($this->page_number+1),
-       'Page/'.($this->page_number-1),
-       $this->list->next_page_url,
-       $this->list->prev_page_url))->makeInlinekeyboard();
+        if($this->list->next_page_url == null and $this->list->prev_page_url == null){
+            $this->keyboard = null;
+        }else{
+            $this->keyboard  =  (new PaginationkeyBokard(
+                null,
+               'Next',
+               'Previous',
+               'Page/'.($this->page_number+1),
+               'Page/'.($this->page_number-1),
+                $this->list->next_page_url,
+                $this->list->prev_page_url))->makeInlinekeyboard();
+        }
+       
     }
 
     /**
@@ -123,7 +138,7 @@ class MyPromotion
      */
     private function advertNumbers()
     {
-        return (($this->page_number-1)*GeneralService::default_number_of_view_advert_page)+1;
+        return (($this->page_number-1)*1)+1;
     }
 
 }

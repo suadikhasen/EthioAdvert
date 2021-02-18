@@ -71,4 +71,26 @@ class ChannelRepository
     {
         self::findChannel($channel_id)->delete();
     }
+
+    public static function checkExisteneOfApprovedChannelOfUser($chat_id)
+    {
+        return Channels::where('channel_owner_id',$chat_id)->where('approve_status',true)->exists();
+    }
+
+    public static function findApprovedChannelsOfAuser($chat_id)
+    {
+        return Channels::where('channel_owner_id',$chat_id)->where('approve_status',true)->pluck(['channel_id','name']);
+    }
+
+    public static function listOfChannelsPost($channel_id,$per_page,$page_number)
+    {
+        TelegramPost::distinct()->select('ethio_advert_post_id')->where('channel_id',$channel_id)->adverts()->paginate($per_page,['*'],'page',$page_number);
+    }
+
+    public static function UpdatelevelId($channel_id,$level_id)
+    {
+        Channels::find($channel_id)->update([
+           'level_id'  => $level_id
+       ]);
+    }
 }

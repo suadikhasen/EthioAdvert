@@ -25,7 +25,8 @@ class TransactionNumberRequest extends FormRequest
     {
         return [
             'transaction_number'  =>  ['required','string','unique:transaction_number,ref_number'],
-            'payment_method'      =>  ['required','exists:list_of_payment_method,id']
+            'payment_method'      =>  ['required','exists:list_of_payment_method,id'],
+            'amount'              =>  ['required','integer','gt:50'],
         ];
     }
 
@@ -36,8 +37,9 @@ class TransactionNumberRequest extends FormRequest
             'transaction_number.required'          =>   'transaction number is required',
             'transaction_number.unique'            =>   'transaction number must be unique',
             'payment_method.required'              =>   'payment method is required',
-            'payment_method.exists'                =>   'payment method not exist'
-
+            'payment_method.exists'                =>   'payment method not exist',
+            'amount.required'                      =>   'amount is required',
+            'amount.integer'                       =>   'amount must be integer',
         ];
     }
 }

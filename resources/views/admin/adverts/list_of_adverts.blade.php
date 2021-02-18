@@ -6,7 +6,7 @@
    <div class="mb-2">
     <form method="get" action="{{route('admin.adverts.search_adverts')}}" class="mb-2">
         <select name="advert_options" class="form-select">
-            <option selected>PostingAdverts<option>
+            <option selected>Posting Adverts<option>
             <option>Closing Adverts</option>
             <option>Active Adverts </option>
             <option>Closed Adverts </option>

@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Admin\Channels;
 use App\Http\Controllers\Controller;
 use App\Services\Common\TelegramBot;
 use App\TelgramBot\Database\Admin\ChannelRepository;
-use App\TelgramBot\Object\Chat;
-use Illuminate\Http\Request;
 
 class ApproveController extends Controller
 {

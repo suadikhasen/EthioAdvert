@@ -2,8 +2,10 @@
 
 namespace App\Services\Common;
 
+use App\TelgramBot\Database\Admin\AdvertRepository;
+use App\TelgramBot\Database\Admin\ListOfPaymentMethodRepository;
 use danog\MadelineProto\API as MadelineProtoAPI;
-use danog\MadelineProto\MTProto;
+use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\Api;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 
@@ -64,6 +66,10 @@ class TelegramBot
             'caption' => $text_message,
             'chat_id' => $channel_id,
             'photo'   => $advert->image_path,
+            'parse_mode'               => 'HTML',
+            'disable_web_page_preview' => true,
+            'disable_notification'     => false,
+
          ]);
       }
       return $message;
@@ -71,27 +77,27 @@ class TelegramBot
 
    public static function makeAdvertMessage($advert)
    {
-       return '<b> #Advert </b>'."\n".
-              '<b> #'.$advert->name_of_the_advert."\n".
-              '<b> #'.$advert->description_of_the_advert."\n"."\n".
-              '<i>'.$advert->text_message.'</i>';
+       return '<b>   #Advert </b>'."\n".
+              '<b> #'.$advert->name_of_the_advert.'</b>'."\n".
+              '<b> #'.$advert->description_of_advert.'</b>'."\n"."\n".
+               $advert->text_message."\n\n".'@EthioAdvertisementBot';
    }
 
-   public static function sendNotificationForChannelOwner($new,$advert,$earning,$channel)
+   public static function sendNotificationForChannelOwner($new,$advert,$channel)
    {
       $text_message = '';
       if($new){
-        $text_message = '#notification  '."\n".
-                        $advert->name_of_the_advert.'  has been posted on channel '.$channel->name."\n".
-                        'this advert will be posted for the next'.($advert->number_of_days-1).'days with out counting today'."\n".
-                        'it will live from'.$advert->initial_time.' to '.$advert->final_time.
-                        'you will earn '.$earning.' from this advert'."\n"."\n".
-                        '----- <b> Thank You For Working With Us </b>---------';    
+        $text_message = '<b> #notification  </b>'."\n".
+                        ' ➡️ <b> Advert '.$advert->name_of_the_advert.'  has been posted .</b>'."\n\n".
+                        ' ➡️ <b> on channel '.$channel->name.'.</b>'."\n\n".
+                        ' ➡️ <b> this advert will be posted for the next '.($advert->number_of_days-1).' days with out counting today.</b>'."\n\n".
+                        ' ➡️ <b> it will live from '.$advert->initial_time.' to '.$advert->final_time.". </b> \n\n".
+                        ' ➡️ <b> you will earn '.$advert->channel_price.' ETB from this advert. </b>'."\n"."\n";
       }else{
          $text_message = '#notification  '."\n".
-                         'previous advert posted';
+                         'previous advert posted on channel'.$channel->name;
       }
-      self::initialize()->sendMessage(['chat_id' => $channel->channel_id,'text'=>$text_message,'parse_mode' => 'HTML']);
+      self::sendNotification($text_message,$channel->channel_owner_id);
    }
 
    public static function sendNotificationForAdvertiser($advert,$channels,$new)
@@ -142,5 +148,33 @@ class TelegramBot
               '⇒.when you wait more than one day to add bot as admin .'."\n".
               '⇒.when your channel content is pornographic,ethnict conflict,false news .'."\n".
               ' <b>you can apply again after you fix the issue</b> '."\n";
+    }
+
+    public  static function getPhotoPath($advert)
+    {
+     return Cache::remember('photo_url'.$advert->id, now()->addMonth(), function () use ($advert) {
+         $bot  = self::initialize();
+         $file = $bot->getFile([
+            'file_id'  => $advert->image_path
+         ]);
+       return  'https://api.telegram.org/file/bot1006616206:AAH8kd8j8mZAyzT4zN4in39addGs3hM603E/'.$file->file_path;
+          
+      });
+    }
+
+    public static function sendAdvertApprovementNotification($advert_id)
+    {
+       $advert  = AdvertRepository::findAdvert($advert_id);
+       $payment_method = ListOfPaymentMethodRepository::paymentMethodForAdvertiser();
+       $approvication_message = '✅ <b> your advert approved successfully!</b>';
+       $payment_method_message = '➡️ <b> Pay '.$advert->amount_of_payment.' ETB using one of the following payment method  listed below. </b>'."\n\n";
+       foreach($payment_method as $payment){
+         $payment_method_message.= '⇨ <b> Bank Name :'.$payment->bank_name.'</b>'."\n\n".
+                                   '⇨ <b> Account Number :'.$payment->account_number.'</b>'."\n\n".
+                                   '⇨ <b> Account Holder Name :'.$payment->account_holder_name.'</b>'."\n\n".
+                                   '---------------------------';
+       }
+       self::sendNotification($approvication_message,$advert->advertiser_id);
+       self::sendNotification($payment_method_message,$advert->advertiser_id);
     }
 }

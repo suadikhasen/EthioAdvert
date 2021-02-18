@@ -21,14 +21,21 @@ class TodayEarning
 
     private function todayEarningOfUser()
     {
-        $total_earning = EarningRepository::todayEarningOfUserByChannel();
-        $text = '<strong>Today Earning Information:</strong>'."\n";
-        $total = 0.0;
-        foreach ($total_earning as $channel_earning){
-            $total += $channel_earning->total_channel_earning;
-            $text .= '<strong>'.$channel_earning->channelsName->name . ':</strong>' . $channel_earning->total_channel_earning. "\n";
-        }
-        $text .= '<strong>Total:</strong>' .$total. "\n";
+        $text = $this->makeTodayEarningMessage();
         Chat::sendTextMessage($text);
+    }
+
+    private function makeTodayEarningMessage()
+    {
+        $channels = ChannelRepository::allChannelsOfAuser(Chat::$chat_id);
+        $text = '<b> <i>  Today Earning Information: </i> </b>'."\n"."\n";
+        $total=0.0;
+        foreach($channels as $channel){
+            $earning=EarningRepository::singleChannelTodayEarning($channel->channel_id);
+            $text.='<strong> On Channel '.$channel->name.'</strong>'.': '.$earning." ETB \n"."\n"; 
+            $total+= $earning;
+        }
+        $text .= '<strong>Total:</strong>' .$total." ETB". "\n";
+        return $text;
     }
 }

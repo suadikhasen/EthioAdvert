@@ -54,7 +54,7 @@ class AllChannel
     private function sendDetailAboutChannel(): void
     {
         $channel = ChannelRepository::searchChannelByName(Chat::$text_message);
-        if ($channel->approved_status){
+        if ($channel->approve_status){
             $approved_status = 'Approved';
         }else{
             $approved_status = 'Not Approved';

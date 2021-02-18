@@ -2,13 +2,11 @@
 
 namespace App\TelgramBot\Classes\Paid;
 
-
 use App\TelgramBot\Database\PaidRepository;
 use App\TelgramBot\Object\Chat;
 
 class PendingPayment
 {
-
 
     public function handle(bool $isCommand=false)
     {

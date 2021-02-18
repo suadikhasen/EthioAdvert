@@ -62,7 +62,7 @@
                     @enderror" 
                     value="{{old('package_level')}}">
                         @foreach ($levels as $level)
-                          <option>{{ $level->level_name }}</option>                       
+                          <option >{{ $level->level_name }}</option>                       
                         @endforeach
                     </select>
                     @error('package_level')

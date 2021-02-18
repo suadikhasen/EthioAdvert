@@ -1,6 +1,7 @@
 <?php
 
 use App\EthioAdvertPost;
+use App\TelgramBot\Object\Chat;
 use Illuminate\Http\Request;
 
 /*
@@ -21,3 +22,6 @@ Route::prefix('/1006616206:AAH8kd8j8mZAyzT4zN4in39addGs3hM603E')->group(function
     Route::post('/', 'TelegramBotApi\IndexController@index');
 });
 Route::post('/paginated_advert','TelegramBotApi\Api\AdvertPostApi@AdvertiserPosts')->name('PaginatedAdvert');
+Route::get('500', function(){
+    Chat::sendTextMessage('server error');
+});

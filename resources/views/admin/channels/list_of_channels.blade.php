@@ -1,6 +1,6 @@
 @extends('admin.extensions.mainframe')
 @section('page_title')
-    {{ $tittle }}
+    {{ $tittle ?? '' }}
 @endsection
 @section('main_content')
     @if (Session::has('success_notification'))
@@ -11,7 +11,7 @@
     @endif
     <table class="table table-bordered table-dark">
         <thead>
-            <b>{{ $table_header }}</b> <br>
+            <b>{{ $table_header ?? '' }}</b> <br>
         </thead>
         <tr>
           <th>Name</th>

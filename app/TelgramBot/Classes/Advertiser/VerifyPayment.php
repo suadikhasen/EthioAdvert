@@ -16,6 +16,7 @@ use App\listOfPaymentMethod;
 use App\TelgramBot\Common\Services\Advertiser\EditAdvertService;
 use App\TelgramBot\Common\Services\Advertiser\ViewAdvertService;
 use App\TelgramBot\Database\TemporaryRepository;
+use App\TransactionNumbers;
 use Telegram\Bot\Keyboard\Keyboard;
 
 /**
@@ -47,7 +48,7 @@ class VerifyPayment
             Chat::sendTextMessageWithInlineKeyboard('select your payment method',$this->keyboard);
         }
         else
-            Chat::sendTextMessage('You dont have ordered Advert Or Your Advert Is Expired Please Add New Advert Or Update Your Advert');
+            Chat::sendTextMessage('❗️<b>You dont have pending Advert Or your advert is expired. </b>');
     }
 
     private function paymentMethodKeyboard()
@@ -66,9 +67,9 @@ class VerifyPayment
     {
         if(EditAdvertService::checkInlineKeyboard('select_advertiser_payment_method')){
             Chat::$text_message = ViewAdvertService::getIDFromViewKeyboard();
-            Chat::createAnswer(Chat::lastAskedQuestion()->id);
             GeneralService::answerCallBackQuery('we get your paymet method');
-            Chat::sendEditTextMessage('please send ref number of your reciept',null,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
+            Chat::sendEditTextMessage('⬇️ <b> please send ref number(transaction number) of your reciept. </b>',null,Chat::$chat_id,GeneralService::getMessageIDFromCallBack());
+            Chat::createAnswer(Chat::lastAskedQuestion()->id);
             Chat::createQuestion('Verify_Payment','ref_number');
         }else{
             Chat::sendTextMessage('please use the given keyboard');
@@ -78,18 +79,21 @@ class VerifyPayment
     public function acceptRefNumber()
     {
         if (AdvertsPostRepository::havePendingInformation(Chat::$chat_id)){
-            $payment_code = TemporaryRepository::getSingleTemporaryData(Chat::$chat_id,'Verify_Payment','ref_number')->answer;
-            $payment = PaymentVerificationRepository::isRefAvailable(Chat::$chat_id,Chat::$text_message,$payment_code);
+            $payment_code = TemporaryRepository::getSingleTemporaryData(Chat::$chat_id,'Verify_Payment','list_of_payment_method')->answer;
+            $payment = PaymentVerificationRepository::isRefAvailable(Chat::$text_message,$payment_code);
             $advert  = AdvertsPostRepository::pendingPromotion(Chat::$chat_id);
             $this->post_id = $advert->id;
             if (!$payment){
-                Chat::sendTextMessage('invalid ref number please insert properly');
+                Chat::sendTextMessage('❗️ <b> invalid ref number please insert properly.</b>');
             }elseif($payment->amount >= $advert->amount_of_payment)
             {   $this->updatePaymentStatus();
-                Chat::sendTextMessage('Your Payment Is Verified Successfully');
+                Chat::deleteTemporaryData();
+                Chat::sendTextMessage('✅ <b> Your Payment Is Verified Successfully !!.</b>');
             }else{
                 Chat::sendTextMessage('Your Amount Is Less than The Amount Of The Advert');
             }
+        }else{
+            Chat::sendTextMessage(' ❗️ <b> your advert is not approved.</b>');
         }
 
     }
@@ -100,9 +104,10 @@ class VerifyPayment
 
             EthioAdvertPost::where('id',$this->post_id)->update([
                 'payment_status' => true,
+                'active_status'  => 2,
             ]);
 
-            PaymentVerification::where('ref_number',Chat::$text_message)->update([
+            TransactionNumbers::where('ref_number',Chat::$text_message)->update([
                 'used_status'     =>   true,
             ]);
 

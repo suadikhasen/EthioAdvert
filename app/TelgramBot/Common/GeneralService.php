@@ -12,11 +12,7 @@ use App\Temporary;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Telegram\Bot\Exceptions\TelegramSDKException;
-use Telegram\Bot\Objects\Message;
 use Andegna\DateTime;
-use Andegna\DateTimeFactory;
-use Andegna\Converter;
-use App\User;
 
 /**
  * Class GeneralService
@@ -296,7 +292,6 @@ class GeneralService
            $day_difference =  $next_day->diffInDays($initial_date,false);
            if (($day_difference >= 0))
            {
-               Chat::$text_message = $initial_date;
                return true;
            }else{
                Chat::sendTextMessage('Your Date Must Be at least 1 day differ from this day');
@@ -368,7 +363,6 @@ class GeneralService
    {
        return Temporary::where('chat_id',Chat::$chat_id)->where('type','Edit Date')->where('question','initial_date')->first();
    }
-
     /**
      * @param bool $skip
      * @throws TelegramSDKException
@@ -450,6 +444,15 @@ class GeneralService
            'All Channel'
        ];
    }
+   
+   /**
+    * @param $page_number,$per_page
+    * @return int 
+    */
+   public static function orderNumber($page_number,$per_page):int
+    {
+        return (int) ((($page_number-1)*$per_page)+1);
+    }
 
 
 

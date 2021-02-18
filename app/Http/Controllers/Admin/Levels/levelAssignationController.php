@@ -5,47 +5,30 @@ namespace App\Http\Controllers\Admin\Levels;
 use App\Http\Controllers\Controller;
 use App\Services\Common\LevelAssignService;
 use App\Services\Common\TelegramBot;
+use App\TelgramBot\Database\Admin\ChannelRepository;
+use App\TelgramBot\Database\Admin\LevelRepository;
 use Illuminate\Support\Str;
 
 class levelAssignationController extends Controller
 {
-    private $chat_id;
-    private $channel_id;
-    private $quality;
-
-    public function __construct($channel_id,$chat_id,$quality)
-    {
-        $this->chat_id    = $chat_id;
-        $this->channel_id = $channel_id;
-        $this->quality    = $quality;
-    }
-
-    public function assignLevel()
-    {  
-       if($this->quality === null){
-           return back()->with('error_notification','assign quality first');
-       } 
-       if(TelegramBot::checkChannelAuthorization($this->channel_id)){
-           return back()->with('error_notification','Telegram Bot Has No Authorization on this Channel');
-       }else{
-           return $this->getResponseFromService();
-       }
-    }
-
-    private function getResponseFromService()
-    {
-        $level_assign = LevelAssignService::assignLevel($this->chat_id,$this->channel_id,$this->quality);
-        if($level_assign === 'not assigned'){
-           return back()->with('error_notification','coud not satisfy the parametre');
-        }elseif($level_assign === 'no post'){
-            return back()->with('error_notification','channel has no post');
-        }elseif(Str::startsWith($level_assign, 'level')){
-            return back()->with('success_notification',$level_assign.' assigned successfullu');
-        }else{
-            return back()->with('error_notification','something went wrong');
-        }
-    }
-
-   
     
+    public function assignLevel($channel_id)
+    {  
+       $channel = ChannelRepository::findChannel($channel_id);
+       if($channel->number_of_member >= 50000){
+           $level = LevelRepository::findLevel(10);
+       }elseif($channel->number_of_member >= 40000){
+        $level = LevelRepository::findLevel(11);
+       }elseif($channel->number_of_member >= 30000){
+        $level = LevelRepository::findLevel(12);
+       }elseif($channel->number_of_member >= 20000){
+        $level = LevelRepository::findLevel(13);
+       }elseif($channel->number_of_member >= 10000){
+        $level = LevelRepository::findLevel(14);
+       }
+       ChannelRepository::UpdatelevelId($channel_id,$level->id);
+       $message = '✅ channel <b>'.$channel->name.' is assigned to '.$level->level_name.' !</b>';
+       TelegramBot::sendNotification($message,$channel->channel_owner_id);
+       return back()->with('success_notification','channel assigned to '.$level->level_name);
+    }   
 }

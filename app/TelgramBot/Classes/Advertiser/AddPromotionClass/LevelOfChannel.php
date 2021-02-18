@@ -13,7 +13,7 @@ class LevelOfChannel extends ListOfChannelLevel {
     {  
        $this->sendListOfLevel($page_number,$inline);
        if(!$inline){
-        Chat::createQuestion('Add_Promotion','level_of_channel');
+          Chat::createQuestion('Add_Promotion','level_of_channel');
        }
     }
 

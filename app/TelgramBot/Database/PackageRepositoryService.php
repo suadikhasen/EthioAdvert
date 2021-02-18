@@ -11,7 +11,7 @@ class PackageRepositoryService{
      */
     public static function retriveuniqueDays()
     {
-       return Package::distinct('number_of_days')->orderBy('number_of_days','ASC')->pluck('number_of_days');
+       return Package::distinct()->select('number_of_days')->orderBy('number_of_days','ASC')->pluck('number_of_days');
     }
 
     public static function retriveuniqueTime($per_page,$page_number,$number_of_days,$level_id)

@@ -26,13 +26,13 @@ class DatabaseSeeder extends Seeder
         // $this->call(UsersTableSeeder::class);
         // factory(\App\Paid::class,50)->create();
         // factory(TelegramPost::class,5)->create();
-        // factory(Channels::class,5)->create();
-        // factory(EthioAdvertPost::class,5)->create();
+        // factory(Channels::class,2)->create();
+        // factory(EthioAdvertPost::class,1)->create();
         // factory(listOfPaymentMethod::class,5)->create();
         // factory(PaymentVerification::class,1)->create();
         // factory(User::class,5)->create();
         // factory(Paid::class,5)->create();
-        // factory(TelegramPost::class,5)->create();
+        //  factory(TelegramPost::class,5)->create();
         // factory(BankAccount::class,5)->create();
         // factory(UserPaymentMethod::class,1)->create();
         // factory(LevelAttribute::class,5)->create();
